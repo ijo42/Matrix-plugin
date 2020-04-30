@@ -2,15 +2,6 @@ package matrix.utils;
 
 import mindustry.Vars;
 import mindustry.entities.type.Player;
-public class AnimatedNick {
-
-    public static void main(Player player) {
-        Update upd;
-        upd = new Update();
-        upd.main(player);
-    }
-
-}
 
 class Update {
 
@@ -25,29 +16,27 @@ class Update {
             player.name = player.name.replace(ConfigTranslate.get("AnimatedNick.colorName"), "");
             String[] arr = player.name.split("");
 
-            th = new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        while(ok) {
-                            boolean oK = Chek(player);
-                            Thread.sleep(700);
-                            if (oK) {
-                                in = aliveMethod(player, arr);
-                            } else th.stop();
-                        }
-                    } catch (InterruptedException ignored) {
+            th = new Thread(() -> {
+                try {
+                    while (ok) {
+                        boolean oK = check(player);
+                        Thread.sleep(700);
+                        if (oK) {
+                            in = aliveMethod(player, arr);
+                        } else th.interrupt();
                     }
+                } catch (InterruptedException ignored) {
                 }
             });
             th.start();
         }
     }
 
-    public static boolean Chek(Player player) {
-        if(!first) {
-            for(int id = 0; id < Vars.playerGroup.all().size; id++){
+    public static boolean check(Player player) {
+        if (!first) {
+            for (int id = 0; id < Vars.playerGroup.all().size; id++) {
                 Player pl = Vars.playerGroup.all().get(id);
-                if(pl == player) return true;
+                if (pl == player) return true;
             }
             return false;
         } else {

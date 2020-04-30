@@ -1,48 +1,30 @@
 package matrix;
 
-import arc.*;
-import arc.util.*;
+import arc.Events;
+import arc.util.CommandHandler;
+import arc.util.Log;
 import matrix.commands.client.*;
+import matrix.discordBot.Bot;
 import matrix.discordBot.communication.SendToDiscord;
 import matrix.utils.*;
-
-import mindustry.*;
+import mindustry.Vars;
 import mindustry.core.GameState;
-import mindustry.entities.type.*;
+import mindustry.entities.type.Player;
 import mindustry.game.EventType;
 import mindustry.game.Team;
 import mindustry.plugin.Plugin;
-import matrix.discordBot.Bot;
 
 import javax.security.auth.login.LoginException;
 
 public class Main extends Plugin{
 
-
-    //register event handlers and create variables in the constructor
     public Main() throws LoginException, InterruptedException {
-
         Config.main();
         if (Config.get("botIsEnabled").equalsIgnoreCase("true")) {
             Bot.main();
         } else Log.warn("BOT IS DISABLED");
-
         Events.on(EventType.PlayerJoin.class, event -> {
-
             TitleManager.main();
-
-            // Слишком много крашей
-
-            /*
-            if(Boolean.parseBoolean(Config.get("allowFreeAnimatedNick"))) {
-                if (Boolean.parseBoolean(Config.get("allowAnimatedNick")))
-                    AnimatedNick.main(event.player);
-            } else {
-                if (Boolean.parseBoolean(Config.get("allowAnimatedNick"))) {
-                    if (event.player.isAdmin) AnimatedNick.main(event.player);
-                }
-            }
-            */
 
             if (Config.get("botIsEnabled").equalsIgnoreCase("true")) {
                 if (Vars.netServer.admins.getPlayerLimit() != 0) {
@@ -85,7 +67,7 @@ public class Main extends Plugin{
             // Запускаем проверку на запрещенные слова
             if (Config.get("botIsEnabled").equalsIgnoreCase("true")) {
                 if (!msg.startsWith("/")) {
-                    if (!event.player.isAdmin && Boolean.valueOf(Config.get("chatGuard"))) {
+                    if (!event.player.isAdmin && Boolean.parseBoolean(Config.get("chatGuard"))) {
                         if (!ChatGuard.check(msg)) {
                             SendToDiscord.send(nick, RemoveColors.main(msg));
                         } else event.player.sendMessage(ConfigTranslate.get("dontSwear"));
@@ -101,7 +83,7 @@ public class Main extends Plugin{
 
     @Override
     public void registerServerCommands(CommandHandler handler){
-        handler.register("ping", "Return \"Pong!\"", arg -> { Log.info("Pong!"); });
+        handler.register("ping", "Return \"Pong!\"", arg -> Log.info("Pong!"));
 
         handler.register("nogui", "Auto start for minecraft hosting", arg -> {
             if(Vars.state.is(GameState.State.playing)) {
@@ -124,9 +106,7 @@ public class Main extends Plugin{
     @Override
     public void registerClientCommands(CommandHandler handler){
 
-        handler.<Player>register(ConfigTranslate.get("cmd.setTeam.name"), ConfigTranslate.get("cmd.setTeam.params"), ConfigTranslate.get("cmd.setTeam.description"), (args, player) -> {
-            SetTeam.set(args, player);
-        });
+        handler.register(ConfigTranslate.get("cmd.setTeam.name"), ConfigTranslate.get("cmd.setTeam.params"), ConfigTranslate.get("cmd.setTeam.description"), SetTeam::set);
 
         handler.<Player>register(ConfigTranslate.get("cmd.gameOver.name"), ConfigTranslate.get("cmd.gameOver.params"), ConfigTranslate.get("cmd.gameOver.description"), (args, player) -> {
             if (!player.isAdmin) return;
@@ -137,13 +117,9 @@ public class Main extends Plugin{
             Events.fire(new EventType.GameOverEvent(Team.crux));
         });
 
-        handler.<Player>register(ConfigTranslate.get("cmd.tp.name"), ConfigTranslate.get("cmd.tp.params"), ConfigTranslate.get("cmd.tp.description"), (args, player) -> {
-            Teleport.toPoint(player, args);
-        });
+        handler.<Player>register(ConfigTranslate.get("cmd.tp.name"), ConfigTranslate.get("cmd.tp.params"), ConfigTranslate.get("cmd.tp.description"), (args, player) -> Teleport.toPoint(player, args));
 
-        handler.<Player>register(ConfigTranslate.get("cmd.tpToPlayer.name"), ConfigTranslate.get("cmd.tpToPlayer.params"), ConfigTranslate.get("cmd.tpToPlayer.description"), (args, player) -> {
-            Teleport.toPlayer(player, args);
-        });
+        handler.<Player>register(ConfigTranslate.get("cmd.tpToPlayer.name"), ConfigTranslate.get("cmd.tpToPlayer.params"), ConfigTranslate.get("cmd.tpToPlayer.description"), (args, player) -> Teleport.toPlayer(player, args));
 
         handler.<Player>register(ConfigTranslate.get("cmd.spawnOre.name"), ConfigTranslate.get("cmd.spawnOre.params"), ConfigTranslate.get("cmd.spawnOre.description"), (args, player) -> {
             if (player.isAdmin) SpawnOre.main(player, args);

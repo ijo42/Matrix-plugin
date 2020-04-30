@@ -18,7 +18,7 @@ public class SystemInfo {
     }
 
     public static int ram() {
-        return Math.round((float)(osMBean.getFreePhysicalMemorySize()/100000) / (osMBean.getTotalPhysicalMemorySize()/100000)*100);
+        return Math.round((float) (osMBean.getFreePhysicalMemorySize() / 100000) / (float) (osMBean.getTotalPhysicalMemorySize() / 100000) * 100);
     }
 
     public static void info() {

@@ -2,33 +2,26 @@ package matrix.utils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class ChatGuard {
 
     public static boolean check (String content){
-        String[] Strings = get();
-
-        for (int i=0; i < Strings.length; i++) {
-            int finalI = i;
-            if (content.indexOf(Strings[finalI]) >= 0){
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(get()).anyMatch(x -> x.equalsIgnoreCase(content));
     }
     
     public static String[] get() {
-        String out = "CHAT_GUARD_ERROR";
+        String out;
         FileInputStream fileInputStream;
         Properties prop = new Properties();
         try {
             fileInputStream = new FileInputStream("config/mods/Matrix/ChatGuard.properties");
             prop.load(fileInputStream);
             out = prop.getProperty("forbiddenWords");
-            out = new String(out.getBytes("ISO-8859-1"), "UTF-8");
-            String[] arr = out.split(";");
-            return arr;
+            out = new String(out.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            return out.split(";");
 
         } catch (IOException e) {
             e.printStackTrace();

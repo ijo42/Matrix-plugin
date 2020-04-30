@@ -4,7 +4,7 @@ public class RemoveColors {
     public static String main(String str) {
 
         boolean ok = true;
-        String resultStr = null;
+        String resultStr;
 
         while (ok) {
             if (str.contains("[") && str.contains("]")) {

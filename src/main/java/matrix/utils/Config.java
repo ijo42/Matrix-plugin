@@ -3,10 +3,12 @@ package matrix.utils;
 import arc.util.Log;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 public class Config {
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void main() {
 
         // Создаём папку если не существует
@@ -30,6 +32,7 @@ public class Config {
                     .getResourceAsStream("config.properties");
                  OutputStream out = new FileOutputStream("config/mods/Matrix/config.properties")) {
                 int data;
+                assert in != null;
                 while ((data = in.read()) != -1) {
                     out.write(data);
                 }
@@ -45,6 +48,7 @@ public class Config {
                     .getResourceAsStream("bundles/ru_RU.properties");
                  OutputStream out = new FileOutputStream("config/mods/Matrix/bundles/ru_RU.properties")) {
                 int data;
+                assert in != null;
                 while ((data = in.read()) != -1) {
                     out.write(data);
                 }
@@ -60,6 +64,7 @@ public class Config {
                     .getResourceAsStream("bundles/en_US.properties");
                  OutputStream out = new FileOutputStream("config/mods/Matrix/bundles/en_US.properties")) {
                 int data;
+                assert in != null;
                 while ((data = in.read()) != -1) {
                     out.write(data);
                 }
@@ -75,11 +80,11 @@ public class Config {
                     .getResourceAsStream("ChatGuard.properties");
                  OutputStream out = new FileOutputStream("config/mods/Matrix/ChatGuard.properties")) {
                 int data;
+                assert in != null;
                 while ((data = in.read()) != -1) {
                     out.write(data);
                 }
-            }
-            catch (IOException exc) {
+            } catch (IOException exc) {
                 exc.printStackTrace();
             }
         }
@@ -94,7 +99,7 @@ public class Config {
             fileInputStream = new FileInputStream("config/mods/Matrix/config.properties");
             prop.load(fileInputStream);
             out = prop.getProperty(nameStr);
-            out = new String(out.getBytes("ISO-8859-1"), "UTF-8");
+            out = new String(out.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
         }

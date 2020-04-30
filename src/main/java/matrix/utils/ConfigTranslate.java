@@ -1,6 +1,8 @@
 package matrix.utils;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 public class ConfigTranslate {
@@ -14,7 +16,7 @@ public class ConfigTranslate {
             prop.load(fileInputStream);
             if (prop.getProperty(nameStr) != null) {
                 out = prop.getProperty(nameStr);
-                out = new String(out.getBytes("ISO-8859-1"), "UTF-8");
+                out = new String(out.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
             e.printStackTrace();
