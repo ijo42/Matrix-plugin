@@ -1,7 +1,6 @@
 package matrix.utils;
 
 import arc.math.Mathf;
-import arc.util.Log;
 import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.entities.type.Player;

@@ -10,10 +10,10 @@ public class Broadcast {
 
             StringBuilder newStr = new StringBuilder();
             for(String data: args){
-                newStr.append(data+" ");
+                newStr.append(data).append(" ");
             }
 
-            Call.onInfoMessage(ConfigTranslate.get("cmd.broadcast.prefix")+String.valueOf(newStr));
+        Call.onInfoMessage(ConfigTranslate.get("cmd.broadcast.prefix") + newStr);
     }
 
 }

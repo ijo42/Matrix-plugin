@@ -16,9 +16,9 @@ import mindustry.plugin.Plugin;
 
 import javax.security.auth.login.LoginException;
 
-public class Main extends Plugin{
+public class Matrix extends Plugin {
 
-    public Main() throws LoginException, InterruptedException {
+    public Matrix() throws LoginException, InterruptedException {
         Config.main();
         if (Config.get("botIsEnabled").equalsIgnoreCase("true")) {
             Bot.main();
@@ -90,9 +90,7 @@ public class Main extends Plugin{
                 Log.err("Already hosting. Type 'stop' to stop hosting first.");
                 return;
             }
-
             Log.info(SystemInfo.cpuProcess());
-
         });
 
         handler.register("memory", "Return \"Pong!\"", arg -> {

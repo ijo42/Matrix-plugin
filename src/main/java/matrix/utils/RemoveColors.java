@@ -14,6 +14,5 @@ public class RemoveColors {
         }
 
         return str;
-
     }
 }
