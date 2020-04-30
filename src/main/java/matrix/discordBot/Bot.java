@@ -1,5 +1,6 @@
 package matrix.discordBot;
 
+import arc.util.Log;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.EventDispatcher;
@@ -19,7 +20,6 @@ import discord4j.store.jdk.JdkStoreService;
 import matrix.discordBot.commands.MainCmd;
 import matrix.discordBot.communication.SendToGame;
 import matrix.utils.Config;
-import org.graalvm.compiler.replacements.Log;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -32,7 +32,7 @@ public class Bot {
         DiscordClient client = DiscordClient.create(Config.get("token"));
         gatewayClient = client.gateway()
                 .setInitialStatus(shard -> Presence.idle())
-                .setSharding(ShardingStrategy.recommended())
+                .setSharding(ShardingStrategy.fixed(1))
                 .setShardCoordinator(LocalShardCoordinator.create())
                 .setAwaitConnections(true)
                 .setStoreService(new JdkStoreService())
@@ -44,7 +44,7 @@ public class Bot {
             Flux<ReadyEvent> hello = gateway.on(ReadyEvent.class)
                     .doOnNext(ready -> {
                         User self = ready.getSelf();
-                        Log.println(String.format("Logged in as %s#%s", self.getUsername(), self.getDiscriminator()));
+                        Log.info(String.format("Logged in as %s#%s", self.getUsername(), self.getDiscriminator()));
                         ready.getClient().updatePresence(Presence.online(Activity.watching(Config.get("status"))));
                     });
 

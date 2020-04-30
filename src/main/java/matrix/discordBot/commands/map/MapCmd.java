@@ -1,4 +1,4 @@
-package matrix.discordBot.commands;
+package matrix.discordBot.commands.map;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -31,10 +31,10 @@ public class MapCmd {
 
             embedCreateSpec.addField(ConfigTranslate.get("cmd.map"), Vars.world.getMap().name(), true);
             embedCreateSpec.addField(ConfigTranslate.get("cmd.map.author"), Vars.world.getMap().author(), true);
-            embedCreateSpec.addField("Волна: ", String.valueOf(Vars.state.wave), true);
-            embedCreateSpec.addField("Врагов: ", String.valueOf(Vars.state.enemies), true);
-            embedCreateSpec.addField("Игроков: ", String.valueOf(Vars.playerGroup.size()), true);
-            embedCreateSpec.addField("Админов онлайн: ", String.valueOf(Vars.playerGroup.all().count(p -> p.isAdmin)), true);
+            embedCreateSpec.addField(ConfigTranslate.get("cmd.map.wave"), String.valueOf(Vars.state.wave), true);
+            embedCreateSpec.addField(ConfigTranslate.get("cmd.map.enemies"), String.valueOf(Vars.state.enemies), true);
+            embedCreateSpec.addField(ConfigTranslate.get("cmd.map.online"), String.valueOf(Vars.playerGroup.size()), true);
+            embedCreateSpec.addField(ConfigTranslate.get("cmd.map.admins"), String.valueOf(Vars.playerGroup.all().count(p -> p.isAdmin)), true);
 
         }).block();
     }
