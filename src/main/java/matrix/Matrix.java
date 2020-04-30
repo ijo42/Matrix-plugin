@@ -14,18 +14,21 @@ import mindustry.game.EventType;
 import mindustry.game.Team;
 import mindustry.plugin.Plugin;
 
-import javax.security.auth.login.LoginException;
-
 public class Matrix extends Plugin {
 
-    public Matrix() throws LoginException, InterruptedException {
+    public static Matrix INSTANCE;
+    private final Bot bot;
+
+    public Matrix() {
         Config.main();
-        if (Config.get("botIsEnabled").equalsIgnoreCase("true")) {
-            Bot.main();
-        } else Log.warn("BOT IS DISABLED");
+        if (!Config.get("botIsEnabled").equalsIgnoreCase("true")) {
+            Log.warn("BOT IS DISABLED");
+            throw new RuntimeException("Enable bot :)");
+        }
+        INSTANCE = this;
+        bot = new Bot();
         Events.on(EventType.PlayerJoin.class, event -> {
             TitleManager.main();
-
             if (Config.get("botIsEnabled").equalsIgnoreCase("true")) {
                 if (Vars.netServer.admins.getPlayerLimit() != 0) {
                     String sendString = ConfigTranslate.get("onJoin")
@@ -65,7 +68,7 @@ public class Matrix extends Plugin {
             String nick = event.player.name;
 
             // Запускаем проверку на запрещенные слова
-            if (Config.get("botIsEnabled").equalsIgnoreCase("true")) {
+            if (Boolean.parseBoolean(Config.get("botIsEnabled"))) {
                 if (!msg.startsWith("/")) {
                     if (!event.player.isAdmin && Boolean.parseBoolean(Config.get("chatGuard"))) {
                         if (!ChatGuard.check(msg)) {
@@ -150,15 +153,19 @@ public class Matrix extends Plugin {
             if (player.isAdmin) {
                 // Ответ js интерпретатора сервера
                 String result = Vars.mods.getScripts().runConsole(arg[0]);
-                
+
                 player.sendMessage("[gray][[[#F7E018]JS[gray]]: [lightgray]" + result);
                 Log.info("&lmJS: &lc" + result);
-                
+
                 // Послать всем игрокам
                 //Call.sendMessage("[gray][[[#F7E018]JS[gray]]: [lightgray]" + result);
             } else player.sendMessage("[gray][[[#F7E018]JS[gray]]: [coral]" + ConfigTranslate.get("cmd.js.isNotAdmin"));
-            
+
         });
+    }
+
+    public Bot getBot() {
+        return bot;
     }
 }
 

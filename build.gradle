@@ -18,12 +18,10 @@ ext{
 dependencies{
     compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
     compileOnly "com.github.fuzzbuck.Mindustry:core:launchpadFix"
-    compile 'net.dv8tion:JDA:4.0.0_59'
-    compile 'com.github.MrPowerGamerBR:TemmieWebhook:-SNAPSHOT'
+    implementation 'com.discord4j:discord4j-core:3.1.0.M2'
 }
 
 jar{
-    version = null
     from{
         configurations.runtimeClasspath.collect{it.isDirectory() ? it : zipTree(it)}
         configurations

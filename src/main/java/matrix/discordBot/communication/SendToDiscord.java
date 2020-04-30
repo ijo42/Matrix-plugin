@@ -1,36 +1,33 @@
 package matrix.discordBot.communication;
 
-import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
-import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
-import matrix.discordBot.Bot;
+import discord4j.core.spec.EmbedCreateSpec;
+import matrix.Matrix;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import matrix.utils.RemoveColors;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.MessageChannel;
+
+import java.time.Instant;
 
 
 public class SendToDiscord {
-    public static JDA jda = Bot.jda;
+
     public static void send(String nick, String msg) {
-        if(msg.isEmpty()) return;
+        if (msg.isEmpty()) return;
         msg = msg.replace("@here", ConfigTranslate.get("pingDeleted")).replace("@everyone", ConfigTranslate.get("pingDeleted"));
-        TemmieWebhook temmie = new TemmieWebhook(Config.get("webhookMsg"));
-        DiscordMessage dm = new DiscordMessage(RemoveColors.main(nick), msg, Config.get("messagerAvatarURL"));
-        temmie.sendMessage(dm);
+        EmbedCreateSpec embed = new EmbedCreateSpec()
+                .setAuthor(RemoveColors.main(nick), null, Config.get("messagerAvatarURL"))
+                .setTimestamp(Instant.now()).setDescription(msg);
+        Matrix.INSTANCE.getBot().sendEmbed(Config.get("discordChatChannelId"), embed);
     }
     public static void log(String nick, String msg) {
-        if(msg.isEmpty()) return;
-        TemmieWebhook temmie = new TemmieWebhook(Config.get("webhookLog"));
-        DiscordMessage dm = new DiscordMessage(ConfigTranslate.get("loggerName")
-                ,ConfigTranslate.get("usageCmd").replace("{0}", RemoveColors.main(nick))
-                +msg, Config.get("loggerAvatarURL"));
-        temmie.sendMessage(dm);
+        if (msg.isEmpty()) return;
+        String message = ConfigTranslate.get("loggerName") + "\n" +
+                ConfigTranslate.get("usageCmd").replace("{0}", RemoveColors.main(nick))
+                + msg;
+        Matrix.INSTANCE.getBot().sendMessage(Config.get("discordLogChannelId"), message);
     }
     public static void sendBotMessage(String message) {
         if(message.isEmpty()) return;
-        MessageChannel channel = jda.getTextChannelById(Config.get("discordChannelId"));
-        channel.sendMessage(message).queue();
+        Matrix.INSTANCE.getBot().sendMessage(Config.get("discordLogChannelId"), message);
     }
 }

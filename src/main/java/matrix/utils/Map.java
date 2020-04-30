@@ -9,7 +9,6 @@ import mindustry.world.Block;
 
 public class Map {
 
-
     public static int getCapacity(Team team) {
         int capacity = 0;
 

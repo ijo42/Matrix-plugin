@@ -8,18 +8,22 @@ import java.util.Properties;
 
 public class Config {
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void main() {
-
         // Создаём папку если не существует
         final File dir1 = new File("config/mods/Matrix");
         if (!dir1.exists()) {
-            dir1.mkdir();
+            if (!dir1.mkdir()) {
+                Log.warn("Dir creation fail");
+                return;
+            }
         }
 
         final File dir2 = new File("config/mods/Matrix/bundles");
         if (!dir2.exists()) {
-            dir2.mkdir();
+            if (!dir2.mkdir()) {
+                Log.warn("Dir creation fail");
+                return;
+            }
         }
 
         File file1 = new File("config/mods/Matrix/config.properties");
@@ -27,9 +31,7 @@ public class Config {
             Log.warn("The config file was successfully generated.");
             Log.warn("Don't forget to change the token in the config.");
 
-            try (InputStream in = Config.class
-                    .getClassLoader()
-                    .getResourceAsStream("config.properties");
+            try (InputStream in = Config.class.getClassLoader().getResourceAsStream("config.properties");
                  OutputStream out = new FileOutputStream("config/mods/Matrix/config.properties")) {
                 int data;
                 assert in != null;

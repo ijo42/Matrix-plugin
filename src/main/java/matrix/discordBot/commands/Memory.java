@@ -1,32 +1,32 @@
 package matrix.discordBot.commands;
 
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.channel.MessageChannel;
 import matrix.utils.ConfigTranslate;
 import matrix.utils.SystemInfo;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class Memory {
-    public static void main(MessageReceivedEvent event) {
-        TextChannel channel = event.getTextChannel();
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(ConfigTranslate.get("cmd.memory.title"), null);
+    public static void main(MessageCreateEvent event) {
+        MessageChannel channel = event.getMessage().getChannel().block();
+        if (channel == null)
+            throw new NullPointerException();
+        channel.createEmbed(embedCreateSpec -> {
+            embedCreateSpec.setTitle(ConfigTranslate.get("cmd.memory.title"));
 
-        eb.setColor(
-                new Color(
-                Integer.parseInt(ConfigTranslate.get("cmd.memory.color.red")),
-                Integer.parseInt(ConfigTranslate.get("cmd.memory.color.green")),
-                Integer.parseInt(ConfigTranslate.get("cmd.memory.color.blue"))
-        ));
+            embedCreateSpec.setColor(
+                    new Color(
+                            Integer.parseInt(ConfigTranslate.get("cmd.memory.color.red")),
+                            Integer.parseInt(ConfigTranslate.get("cmd.memory.color.green")),
+                            Integer.parseInt(ConfigTranslate.get("cmd.memory.color.blue"))
+                    ));
 
-        eb.setDescription(ConfigTranslate.get("cmd.memory.description"));
+            embedCreateSpec.setDescription(ConfigTranslate.get("cmd.memory.description"));
 
-        eb.addField(ConfigTranslate.get("cpu"), SystemInfo.cpu() +"%", true);
-        eb.addField(ConfigTranslate.get("cpuServer"), SystemInfo.cpuProcess() +"%", true);
-        eb.addField(ConfigTranslate.get("ram"), SystemInfo.ram() +"%", true);
-
-        channel.sendMessage(eb.build()).queue();
+            embedCreateSpec.addField(ConfigTranslate.get("cpu"), SystemInfo.cpu() + "%", true);
+            embedCreateSpec.addField(ConfigTranslate.get("cpuServer"), SystemInfo.cpuProcess() + "%", true);
+            embedCreateSpec.addField(ConfigTranslate.get("ram"), SystemInfo.ram() + "%", true);
+        }).block();
     }
 }

@@ -1,27 +1,25 @@
 package matrix.discordBot.commands;
 
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.channel.MessageChannel;
 import matrix.utils.ConfigTranslate;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.io.*;
 import java.util.Properties;
 
 
-public class SetMsgChannel extends ListenerAdapter {
+public class SetMsgChannel {
 
-    //JDABuilder bot = Bot.bot;
-
-    public static void main(MessageReceivedEvent event) {
-        MessageChannel channel = event.getChannel();
-        if(!event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-            channel.sendMessage(ConfigTranslate.get("noPerm")).queue(response -> {});
+    public static void main(MessageCreateEvent event) {
+        MessageChannel channel = event.getMessage().getChannel().block();
+        if (channel == null)
             return;
-        }
-        channel.sendMessage(ConfigTranslate.get("cmd.setMsgChannel.ok")).queue(response -> {});
-        String id = channel.getId();
+        /*if(!event.getMember().get().hasHigherRoles(){//.block().contains(Permission.ADMINISTRATOR)) {
+            channel.createMessage(ConfigTranslate.get("noPerm")).block();
+            return;
+        }*/ //TODO:Perms check
+        channel.createMessage(ConfigTranslate.get("cmd.setMsgChannel.ok")).block();
+        String id = channel.getId().asString();
 
         File file = new File("config/mods/Matrix/config.properties");
 
