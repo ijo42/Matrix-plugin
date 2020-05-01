@@ -1,18 +1,18 @@
 package matrix.discordBot.commands;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Message;
 import matrix.discordBot.commands.map.MapChangeCmd;
 import matrix.discordBot.commands.map.MapCmd;
 import matrix.discordBot.commands.map.MapUploadCmd;
 import matrix.discordBot.commands.map.MapsCmd;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
+import org.javacord.api.entity.message.Message;
+import org.javacord.api.event.message.MessageCreateEvent;
 
 public class MainCmd {
 
     public void onMessageReceived(MessageCreateEvent event) {
-        if (!event.getMember().isPresent() || event.getMember().get().isBot()) return;
+        if (!event.isPrivateMessage() || !event.getMessageAuthor().isUser()) return;
         Message msg = event.getMessage();
 
         if (msg.getContent().startsWith(Config.get("prefix") + ConfigTranslate.get("cmd.setMsgChannel.name"))) {

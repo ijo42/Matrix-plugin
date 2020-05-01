@@ -3,17 +3,17 @@ package matrix.discordBot.commands.map;
 import arc.Core;
 import arc.Events;
 import arc.files.Fi;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;
 import mindustry.game.EventType;
 import mindustry.game.Team;
 import mindustry.maps.Map;
+import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.event.message.MessageCreateEvent;
 
 public class MapChangeCmd {
     public static void main(MessageCreateEvent event) {
-        MessageChannel channel = event.getMessage().getChannel().block();
+        TextChannel channel = event.getMessage().getChannel();
         if (channel == null)
             return;
         String[] splitted = event.getMessage().getContent().split(" ", 2);
@@ -56,6 +56,6 @@ public class MapChangeCmd {
                 }
             }
         }
-        channel.createMessage(message);
+        channel.sendMessage(message);
     }
 }

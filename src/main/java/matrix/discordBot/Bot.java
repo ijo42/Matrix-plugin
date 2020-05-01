@@ -1,134 +1,103 @@
 package matrix.discordBot;
 
+import arc.Events;
 import arc.util.Log;
-import discord4j.core.DiscordClient;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.EventDispatcher;
-import discord4j.core.event.domain.lifecycle.ReadyEvent;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.User;
-import discord4j.core.object.entity.channel.Channel;
-import discord4j.core.object.presence.Activity;
-import discord4j.core.object.presence.Presence;
-import discord4j.core.shard.LocalShardCoordinator;
-import discord4j.core.shard.ShardingStrategy;
-import discord4j.core.spec.EmbedCreateSpec;
-import discord4j.discordjson.json.ImmutableMessageCreateRequest;
-import discord4j.discordjson.json.MessageCreateRequest;
-import discord4j.rest.util.Snowflake;
-import discord4j.store.jdk.JdkStoreService;
+import matrix.Matrix;
 import matrix.discordBot.commands.MainCmd;
 import matrix.discordBot.communication.SendToGame;
 import matrix.utils.Config;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import matrix.utils.ConfigTranslate;
+import matrix.utils.RemoveColors;
+import mindustry.game.EventType;
+import org.javacord.api.DiscordApi;
+import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.channel.Channel;
+import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.MessageBuilder;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.permission.Role;
+import org.javacord.api.entity.user.User;
+import org.javacord.api.util.logging.ExceptionLogger;
+
+import java.util.List;
+import java.util.Optional;
 
 public class Bot {
-    GatewayDiscordClient gatewayClient;
+    DiscordApi api;
 
     public Bot() {
-        if (Config.get("token") == null || Config.get("token").isEmpty())
-            throw new RuntimeException("Bot token is null");
-        DiscordClient client = DiscordClient.create(Config.get("token"));
-        gatewayClient = client.gateway()
-                .setInitialStatus(shard -> Presence.idle())
-                .setSharding(ShardingStrategy.fixed(1))
-                .setShardCoordinator(LocalShardCoordinator.create())
-                .setAwaitConnections(true)
-                .setStoreService(new JdkStoreService())
-                .setEventDispatcher(EventDispatcher.buffering())
-                .login()
-                .block();
+        Config.get("token");
+        if (!Config.has("token"))
+            throw new RuntimeException("DiscordPlugin: Токен не валидный.");
+        new DiscordApiBuilder().setToken(Config.get("token")).login().thenAccept(api -> {
+            api.addMessageCreateListener(event -> new SendToGame());
+            api.addMessageCreateListener(event -> new MainCmd());
+            api.getChannelById(Config.get("liveChannelId")).ifPresent(Bot::registerLiveChat);
+            this.api = api;
+            User bot = api.getYourself();
+            Log.info(String.format("Logged in as %s#%s", bot.getName(), bot.getDiscriminator()));
+            api.setMessageCacheSize(1, 30);
+            Runtime.getRuntime().addShutdownHook(new ShootDownHook());
+        }).exceptionally(ExceptionLogger.get());
+    }
 
-        client.withGateway(gateway -> {
-            Flux<ReadyEvent> hello = gateway.on(ReadyEvent.class)
-                    .doOnNext(ready -> {
-                        User self = ready.getSelf();
-                        Log.info(String.format("Logged in as %s#%s", self.getUsername(), self.getDiscriminator()));
-                        ready.getClient().updatePresence(Presence.online(Activity.watching(Config.get("status"))));
-                    });
+    private static void registerLiveChat(Channel channel) {
+        Optional<TextChannel> tx = channel.asTextChannel();
+        if (tx.isPresent()) {
+            Events.on(EventType.PlayerChatEvent.class, event -> {
+                String message = event.message.replace("@here", ConfigTranslate.get("pingDeleted")).replace("@everyone", ConfigTranslate.get("pingDeleted"));
+                String username = RemoveColors.remove.apply(event.player.name);
+                tx.get().sendMessage("**" + username + "**: " + message);
+            });
+        } else
+            Log.info("liveChannelId is not valid. Turning off");
+    }
 
-            MainCmd mainCmd = new MainCmd();
-            SendToGame sendToGame = new SendToGame();
-            Flux<MessageCreateEvent> command = gateway.on(MessageCreateEvent.class)
-                    .filter(x -> !x.getMessage().getContent().isEmpty())
-                    .filter(x -> x.getMessage().getContent().startsWith(Config.get("prefix")))
-                    .doOnNext(mainCmd::onMessageReceived);
+    public static Role getHighestRole(List<Role> roles) {
+        final Role[] highestRole = {null};
+        roles.forEach(role -> {
+            if (highestRole[ 0 ] == null || role.compareTo(highestRole[ 0 ]) > 0)
+                highestRole[ 0 ] = role;
+        });
+        return highestRole[ 0 ];
+    }
 
-            Flux<MessageCreateEvent> integrate = gateway.on(MessageCreateEvent.class)
-                    .filter(x -> !x.getMessage().getContent().isEmpty())
-                    .filter(x -> x.getMessage().getContent().startsWith(Config.get("prefix")))
-                    .doOnNext(sendToGame::onMessageReceived);
-
-            return Mono.when(hello, command, integrate);
-        }).block();
-        client.login().block();
+    public static Optional<Role> getRoleFromID(String id) {
+        return Matrix.INSTANCE.getBot().api.getRoleById(id);
     }
 
     public void sendMessage(String channelID, String message) {
-        Channel channel = gatewayClient.getChannelById(Snowflake.of(channelID)).block();
-        if (channel == null)
+        Optional<TextChannel> channel = api.getTextChannelById(channelID);
+        if (!channel.isPresent()) {
+            new RuntimeException("Channel not present Bot::sendMessage").printStackTrace();
             return;
-        ImmutableMessageCreateRequest content = MessageCreateRequest.builder().content(message).build();
-        channel.getRestChannel().createMessage(content).block();
+        }
+        new MessageBuilder().append(message).send(channel.get());
     }
 
-    public void sendEmbed(String channelID, EmbedCreateSpec spec) {
-        Channel channel = gatewayClient.getChannelById(Snowflake.of(channelID)).block();
-        if (channel == null)
+    public void sendEmbed(String channelID, EmbedBuilder spec) {
+        Optional<TextChannel> channel = api.getTextChannelById(channelID);
+        if (!channel.isPresent()) {
+            new RuntimeException("Channel not present Bot::sendMessage").printStackTrace();
             return;
-        ImmutableMessageCreateRequest content = MessageCreateRequest.builder().embed(spec.asRequest()).build();
-        channel.getRestChannel().createMessage(content).block();
+        }
+        new MessageBuilder().setEmbed(spec).send(channel.get());
+    }
+
+    public class ShootDownHook extends Thread {
+        @Override
+        public void run() {
+            Optional<Role> stuff = api.getRoleById(Config.get("stuffRoleID"));
+            if (stuff.isPresent()) {
+                stuff.get().updateMentionableFlag(true);
+                String message = ConfigTranslate.get("serverDownMessage");
+                message = message.replace("{0}", stuff.get().getMentionTag());
+                if (Config.has("serverName"))
+                    message = message.replace("{1}", Config.get("serverName"));
+                else
+                    message = message.substring(0, message.indexOf("{1}")) + message.substring(message.indexOf("{1}"));
+                sendMessage(Config.get("stuffChannelID"), message);
+            }
+        }
     }
 }
-
-/*
-public class BotThread extends Thread{
-    public DiscordApi api;
-    private Thread mt;
-    private JSONObject data;
-
-    public BotThread(DiscordApi _api, Thread _mt, JSONObject _data) {
-        api = _api; //new DiscordApiBuilder().setToken(data.get(0)).login().join();
-        mt = _mt;
-        data = _data;
-
-        //communication commands
-        api.addMessageCreateListener(new ComCommands());
-        //server manangement commands
-        api.addMessageCreateListener(new ServerCommands(data));
-        api.addMessageCreateListener(new MapCommands(data));
-    }
-
-    public void run(){
-        while (this.mt.isAlive()){
-            try {
-                Thread.sleep(1000);
-            } catch (Exception ignored) {
-
-            }
-        }
-        if (data.has("serverdown_role_id")){
-            Role r = new UtilMethods().getRole(api, data.getString("serverdown_role_id"));
-            TextChannel tc = new UtilMethods().getTextChannel(api, data.getString("serverdown_channel_id"));
-            if (r == null || tc ==  null) {
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception ignored) {
-                }
-            } else {
-                if (data.has("serverdown_name")){
-                    String serverName = data.getString("serverdown_name");
-                    new MessageBuilder()
-                            .append(String.format("%s\nСервер %s упал", r.getMentionTag(), ((!serverName.equals("")) ? ("**" + serverName + "**") : "")))
-                            .send(tc);
-                } else {
-                    new MessageBuilder()
-                            .append(String.format("%s\nСервер упал.", r.getMentionTag()))
-                            .send(tc);
-                }
-            }
-        }
-        api.disconnect();
-    }
-}*/
