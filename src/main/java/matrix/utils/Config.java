@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 public class Config {
-
+    private static Properties prop;
     public static void main() {
         // Создаём папку если не существует
         final File dir1 = new File("config/mods/Matrix");
@@ -90,21 +90,27 @@ public class Config {
                 exc.printStackTrace();
             }
         }
-
-    }
-
-    public static String get(String nameStr) {
-        String out = "CONFIG_ERROR";
-        FileInputStream fileInputStream;
-        Properties prop = new Properties();
         try {
+            FileInputStream fileInputStream;
+            prop = new Properties();
             fileInputStream = new FileInputStream("config/mods/Matrix/config.properties");
             prop.load(fileInputStream);
-            out = prop.getProperty(nameStr);
-            out = new String(out.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return out;
+    }
+
+    public static String get(String nameStr) {
+        String out;
+        out = prop.getProperty(nameStr);
+        out = new String(out.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        return out.isEmpty() ? "CONFIG_ERROR" : out;
+    }
+
+    public static boolean has(String nameStr) {
+        String out;
+        out = prop.getProperty(nameStr);
+        out = new String(out.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        return !out.isEmpty();
     }
 }

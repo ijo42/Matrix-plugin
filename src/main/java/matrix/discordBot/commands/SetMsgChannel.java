@@ -1,25 +1,33 @@
 package matrix.discordBot.commands;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
+import matrix.Matrix;
+import matrix.discordBot.Bot;
+import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
+import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.permission.Role;
+import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.io.*;
+import java.util.Optional;
 import java.util.Properties;
 
 
 public class SetMsgChannel {
 
     public static void main(MessageCreateEvent event) {
-        MessageChannel channel = event.getMessage().getChannel().block();
-        if (channel == null)
+        TextChannel channel = event.getMessage().getChannel();
+        Optional<Role> optRole = Bot.getRoleFromID(Config.get("stuffRoleID"));
+        if (channel == null || !event.getMessageAuthor().asUser().isPresent() || !event.getServer().isPresent() || !optRole.isPresent())
             return;
-        /*if(!event.getMember().get().hasHigherRoles(){//.block().contains(Permission.ADMINISTRATOR)) {
-            channel.createMessage(ConfigTranslate.get("noPerm")).block();
+
+        if (!event.getMessageAuthor().asUser().get().getRoles(event.getServer().get())
+                .contains(optRole.get())) {
+            channel.sendMessage(ConfigTranslate.get("noPerm"));
             return;
-        }*/ //TODO:Perms check
-        channel.createMessage(ConfigTranslate.get("cmd.setMsgChannel.ok")).block();
-        String id = channel.getId().asString();
+        }
+        Matrix.INSTANCE.getBot().sendMessage(channel.getIdAsString(), (ConfigTranslate.get("cmd.setMsgChannel.ok")));
+        String id = channel.getIdAsString();
 
         File file = new File("config/mods/Matrix/config.properties");
 
@@ -44,7 +52,4 @@ public class SetMsgChannel {
             }
         }
     }
-
-
-
 }

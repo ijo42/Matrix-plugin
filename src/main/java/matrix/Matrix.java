@@ -32,31 +32,30 @@ public class Matrix extends Plugin {
             if (Config.get("botIsEnabled").equalsIgnoreCase("true")) {
                 if (Vars.netServer.admins.getPlayerLimit() != 0) {
                     String sendString = ConfigTranslate.get("onJoin")
-                            .replace("{0}", RemoveColors.main(event.player.name))
+                            .replace("{0}", RemoveColors.remove.apply(event.player.name))
                             .replace("{1}", String.valueOf(Vars.playerGroup.size() + 1))
                             .replace("{2}", String.valueOf(Vars.netServer.admins.getPlayerLimit()));
                     SendToDiscord.sendBotMessage(sendString);
                 } else {
                     String sendString = ConfigTranslate.get("onJoinUnlimited")
-                            .replace("{0}", RemoveColors.main(event.player.name))
+                            .replace("{0}", RemoveColors.remove.apply(event.player.name))
                             .replace("{1}", String.valueOf(Vars.playerGroup.size() + 1));
                     SendToDiscord.sendBotMessage(sendString);
                 }
             }
-
         });
 
         Events.on(EventType.PlayerLeave.class, event -> {
             if (Config.get("botIsEnabled").equalsIgnoreCase("true")) {
                 if (Vars.netServer.admins.getPlayerLimit() != 0) {
                     String sendString = ConfigTranslate.get("onLeave")
-                            .replace("{0}", RemoveColors.main(event.player.name))
+                            .replace("{0}", RemoveColors.remove.apply(event.player.name))
                             .replace("{1}", String.valueOf(Vars.playerGroup.size() - 1))
                             .replace("{2}", String.valueOf(Vars.netServer.admins.getPlayerLimit()));
                     SendToDiscord.sendBotMessage(sendString);
                 } else {
                     String sendString = ConfigTranslate.get("onLeaveUnlimited")
-                            .replace("{0}", RemoveColors.main(event.player.name))
+                            .replace("{0}", RemoveColors.remove.apply(event.player.name))
                             .replace("{1}", String.valueOf(Vars.playerGroup.size() - 1));
                     SendToDiscord.sendBotMessage(sendString);
                 }
@@ -72,10 +71,10 @@ public class Matrix extends Plugin {
                 if (!msg.startsWith("/")) {
                     if (!event.player.isAdmin && Boolean.parseBoolean(Config.get("chatGuard"))) {
                         if (!ChatGuard.check(msg)) {
-                            SendToDiscord.send(nick, RemoveColors.main(msg));
+                            SendToDiscord.send(nick, RemoveColors.remove.apply(msg));
                         } else event.player.sendMessage(ConfigTranslate.get("dontSwear"));
                     } else {
-                        SendToDiscord.send(nick, RemoveColors.main(msg));
+                        SendToDiscord.send(nick, RemoveColors.remove.apply(msg));
                     }
                 } else SendToDiscord.log(nick, msg);
             }
@@ -85,11 +84,11 @@ public class Matrix extends Plugin {
     }
 
     @Override
-    public void registerServerCommands(CommandHandler handler){
+    public void registerServerCommands(CommandHandler handler) {
         handler.register("ping", "Return \"Pong!\"", arg -> Log.info("Pong!"));
 
-        handler.register("nogui", "Auto start for minecraft hosting", arg -> {
-            if(Vars.state.is(GameState.State.playing)) {
+        handler.register("nogui", "Auto start for hosting", arg -> {
+            if (Vars.state.is(GameState.State.playing)) {
                 Log.err("Already hosting. Type 'stop' to stop hosting first.");
                 return;
             }
@@ -97,9 +96,9 @@ public class Matrix extends Plugin {
         });
 
         handler.register("memory", "Return \"Pong!\"", arg -> {
-            Log.info("SYSTEM CPU LOAD: "+SystemInfo.cpu()+"%");
-            Log.info("PROCESS CPU LOAD: "+SystemInfo.cpuProcess()+"%");
-            Log.info("TOTAL RAM LOAD: "+ (100-SystemInfo.ram()) +"%");
+            Log.info("SYSTEM CPU LOAD: " + SystemInfo.cpu() + "%");
+            Log.info("PROCESS CPU LOAD: " + SystemInfo.cpuProcess() + "%");
+            Log.info("TOTAL RAM LOAD: " + (100 - SystemInfo.ram()) + "%");
         });
 
     }
