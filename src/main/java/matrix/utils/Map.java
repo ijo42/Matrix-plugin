@@ -11,7 +11,7 @@ public class Map {
 
     public static int getCapacity(Team team) {
         int capacity = 0;
-
+            //TODO:fix zero output
         for(int x = 0; x < Vars.state.teams.get(team).cores.size; x++){
             if(Vars.state.teams.get(team).cores.get(x).block == Blocks.coreShard) capacity+=Blocks.coreShard.itemCapacity;
             if(Vars.state.teams.get(team).cores.get(x).block == Blocks.coreFoundation) capacity+=Blocks.coreFoundation.itemCapacity;

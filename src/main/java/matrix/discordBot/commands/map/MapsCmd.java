@@ -18,12 +18,13 @@ public class MapsCmd {
 
         for (Map m : Vars.maps.customMaps()) {
             embedCreateSpec.addField(ConfigTranslate.get("cmd.maps.entryKey")
-                    .replace("{0}", m.name()), ConfigTranslate.get("cmd.maps.entryValue")
-                    .replace("{1}", String.valueOf(m.width))
-                    .replace("{1}", String.valueOf(m.width)), true);
+                            .replace("{0}", m.name()),
+                    ConfigTranslate.get("cmd.maps.entryValue")
+                            .replace("{0}", String.valueOf(m.width))
+                            .replace("{1}", String.valueOf(m.width)), true);
         }
 
-        embedCreateSpec.setFooter(ConfigTranslate.get("cmd.maps.footer"));
+        embedCreateSpec.setFooter(ConfigTranslate.get("cmd.maps.footer").replace("{0}", String.valueOf(Vars.maps.customMaps().size)));
         channel.sendMessage(embedCreateSpec);
     }
 }

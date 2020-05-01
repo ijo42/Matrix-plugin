@@ -52,7 +52,7 @@ public class MapChangeCmd {
                     temp.deleteDirectory();
                     Vars.maps.reload();
 
-                    message = ConfigTranslate.get("cmd.changeMap.successful");
+                    message = ConfigTranslate.get("cmd.changeMap.successful").replace("{0}", found.name());
                 }
             }
         }

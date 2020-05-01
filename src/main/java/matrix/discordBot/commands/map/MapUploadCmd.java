@@ -45,8 +45,13 @@ public class MapUploadCmd {
                 } else {
                     fh.writeBytes(data, false);
                     Vars.maps.reload();
-                    message = ConfigTranslate.get("cmd.uploadMap.successful");
+                    message = ConfigTranslate.get("cmd.uploadMap.successful").replace("{0}", ml.get(0).getFileName());
                 }
+            } catch (java.lang.RuntimeException e) {
+                if (!e.getMessage().equals("incorrect header check"))
+                    e.printStackTrace();
+                message = ConfigTranslate.get("cmd.uploadMap.error");
+
             } catch (Exception e) {
                 message = ConfigTranslate.get("cmd.uploadMap.error");
                 e.printStackTrace();
