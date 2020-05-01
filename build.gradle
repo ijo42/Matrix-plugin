@@ -48,5 +48,5 @@ task proguard(type: ProGuardTask) {
     outjars 'build/libs/Matrix-plugin-1.0.out.jar'
 }
 
-jar.dependsOn proguard
+//jar.dependsOn proguard
 defaultTasks 'build'
