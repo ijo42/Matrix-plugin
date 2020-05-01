@@ -16,6 +16,10 @@ import java.util.Optional;
 
 public class SendToGame implements MessageCreateListener {
 
+    public SendToGame(MessageCreateEvent messageCreateEvent) {
+        onMessageCreate(messageCreateEvent);
+    }
+
     private boolean preCheck(MessageCreateEvent event) {
         boolean result = false;
         if (!event.getMessage().getAuthor().isUser()) result = true;
