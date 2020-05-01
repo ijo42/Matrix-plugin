@@ -1,3 +1,13 @@
+import proguard.gradle.ProGuardTask
+
+buildscript {
+    repositories {
+        flatDir dirs: 'libs/proguard6.2.2/lib'
+    }
+    dependencies {
+        classpath ':proguard:'
+    }
+}
 apply plugin: "java"
 
 version '1.0'
@@ -18,7 +28,7 @@ ext{
 dependencies{
     compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
     compileOnly "com.github.fuzzbuck.Mindustry:core:launchpadFix"
-    implementation 'com.discord4j:discord4j-core:3.1.0.M2'
+    compile 'com.discord4j:discord4j-core:3.1.0.M2'
 }
 
 jar{
@@ -30,3 +40,13 @@ jar{
                 .collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
+
+task proguard(type: ProGuardTask) {
+    configuration 'proguard.txt'
+
+    injars 'build/libs/Matrix-plugin-1.0.jar'
+    outjars 'build/libs/Matrix-plugin-1.0.out.jar'
+}
+
+jar.dependsOn proguard
+defaultTasks 'build'
