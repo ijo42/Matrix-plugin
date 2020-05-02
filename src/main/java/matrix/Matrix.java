@@ -32,13 +32,13 @@ public class Matrix extends Plugin {
             if (Config.get("botIsEnabled").equalsIgnoreCase("true")) {
                 if (Vars.netServer.admins.getPlayerLimit() != 0) {
                     String sendString = ConfigTranslate.get("onJoin")
-                            .replace("{0}", RemoveColors.remove.apply(event.player.name))
+                            .replace("{0}", ChatGuard.removeColors.apply(event.player.name))
                             .replace("{1}", String.valueOf(Vars.playerGroup.size() + 1))
                             .replace("{2}", String.valueOf(Vars.netServer.admins.getPlayerLimit()));
                     SendToDiscord.sendBotMessage(sendString);
                 } else {
                     String sendString = ConfigTranslate.get("onJoinUnlimited")
-                            .replace("{0}", RemoveColors.remove.apply(event.player.name))
+                            .replace("{0}", ChatGuard.removeColors.apply(event.player.name))
                             .replace("{1}", String.valueOf(Vars.playerGroup.size() + 1));
                     SendToDiscord.sendBotMessage(sendString);
                 }
@@ -49,13 +49,13 @@ public class Matrix extends Plugin {
             if (Config.get("botIsEnabled").equalsIgnoreCase("true")) {
                 if (Vars.netServer.admins.getPlayerLimit() != 0) {
                     String sendString = ConfigTranslate.get("onLeave")
-                            .replace("{0}", RemoveColors.remove.apply(event.player.name))
+                            .replace("{0}", ChatGuard.removeColors.apply(event.player.name))
                             .replace("{1}", String.valueOf(Vars.playerGroup.size() - 1))
                             .replace("{2}", String.valueOf(Vars.netServer.admins.getPlayerLimit()));
                     SendToDiscord.sendBotMessage(sendString);
                 } else {
                     String sendString = ConfigTranslate.get("onLeaveUnlimited")
-                            .replace("{0}", RemoveColors.remove.apply(event.player.name))
+                            .replace("{0}", ChatGuard.removeColors.apply(event.player.name))
                             .replace("{1}", String.valueOf(Vars.playerGroup.size() - 1));
                     SendToDiscord.sendBotMessage(sendString);
                 }
@@ -71,10 +71,10 @@ public class Matrix extends Plugin {
                 if (!msg.startsWith("/")) {
                     if (!event.player.isAdmin && Boolean.parseBoolean(Config.get("chatGuard"))) {
                         if (!ChatGuard.check(msg)) {
-                            SendToDiscord.sendChatMessage(nick, RemoveColors.remove.apply(msg), false);
+                            SendToDiscord.sendChatMessage(nick, ChatGuard.removeColors.apply(msg), false);
                         } else event.player.sendMessage(ConfigTranslate.get("dontSwear"));
                     } else {
-                        SendToDiscord.sendChatMessage(nick, RemoveColors.remove.apply(msg), true);
+                        SendToDiscord.sendChatMessage(nick, ChatGuard.removeColors.apply(msg), true);
                     }
                 } else SendToDiscord.log(nick, msg);
             }

@@ -1,9 +1,9 @@
 package matrix.discordbot.communication;
 
 import matrix.Matrix;
+import matrix.utils.ChatGuard;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
-import matrix.utils.RemoveColors;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 
 import java.awt.*;
@@ -17,7 +17,7 @@ public class SendToDiscord {
         //TODO: <@&ROLE_ID> replace by regexp
         EmbedBuilder embed = new EmbedBuilder()
                 .setColor(isAdmin ? Color.RED : Color.CYAN)
-                .setAuthor(RemoveColors.remove.apply(nick), null, (Config.has("messagerAvatarURL") ? Config.get("messagerAvatarURL") : null))
+                .setAuthor(ChatGuard.removeColors.apply(nick), null, (Config.has("messagerAvatarURL") ? Config.get("messagerAvatarURL") : null))
                 .setTimestamp(Instant.now()).setDescription(msg);
         Matrix.INSTANCE.getBot().sendEmbed(Config.get("liveChannelId"), embed);
     }
@@ -25,7 +25,7 @@ public class SendToDiscord {
     public static void log(String nick, String msg) {
         if (msg.isEmpty()) return;
         String message = ConfigTranslate.get("loggerName") + "\n" +
-                ConfigTranslate.get("usageCmd").replace("{0}", RemoveColors.remove.apply(nick))
+                ConfigTranslate.get("usageCmd").replace("{0}", ChatGuard.removeColors.apply(nick))
                 + msg;
         Matrix.INSTANCE.getBot().sendMessage(Config.get("stuffChannelID"), message);
     }
