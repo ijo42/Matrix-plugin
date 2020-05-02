@@ -1,4 +1,4 @@
-package matrix.discordBot.commands;
+package matrix.discordbot.commands;
 
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;

@@ -1,9 +1,9 @@
-package matrix.discordBot;
+package matrix.discordbot;
 
 import arc.util.Log;
 import matrix.Matrix;
-import matrix.discordBot.commands.MainCmd;
-import matrix.discordBot.communication.SendToGame;
+import matrix.discordbot.commands.MainCmd;
+import matrix.discordbot.communication.SendToGame;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import org.javacord.api.DiscordApi;

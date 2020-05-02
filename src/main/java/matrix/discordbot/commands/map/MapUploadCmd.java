@@ -1,4 +1,4 @@
-package matrix.discordBot.commands.map;
+package matrix.discordbot.commands.map;
 
 import arc.Core;
 import arc.files.Fi;

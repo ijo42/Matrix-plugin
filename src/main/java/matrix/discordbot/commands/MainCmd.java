@@ -1,9 +1,9 @@
-package matrix.discordBot.commands;
+package matrix.discordbot.commands;
 
-import matrix.discordBot.commands.map.MapChangeCmd;
-import matrix.discordBot.commands.map.MapCmd;
-import matrix.discordBot.commands.map.MapUploadCmd;
-import matrix.discordBot.commands.map.MapsCmd;
+import matrix.discordbot.commands.map.MapChangeCmd;
+import matrix.discordbot.commands.map.MapCmd;
+import matrix.discordbot.commands.map.MapUploadCmd;
+import matrix.discordbot.commands.map.MapsCmd;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import org.javacord.api.entity.message.Message;

@@ -1,4 +1,4 @@
-package matrix.discordBot.communication;
+package matrix.discordbot.communication;
 
 import matrix.Matrix;
 import matrix.utils.Config;

@@ -1,7 +1,7 @@
-package matrix.discordBot.commands;
+package matrix.discordbot.commands;
 
 import matrix.Matrix;
-import matrix.discordBot.Bot;
+import matrix.discordbot.Bot;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import org.javacord.api.entity.channel.TextChannel;

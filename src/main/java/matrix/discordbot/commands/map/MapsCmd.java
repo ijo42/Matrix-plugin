@@ -1,4 +1,4 @@
-package matrix.discordBot.commands.map;
+package matrix.discordbot.commands.map;
 
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;

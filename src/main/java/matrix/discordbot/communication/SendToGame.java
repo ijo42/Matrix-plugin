@@ -1,6 +1,6 @@
-package matrix.discordBot.communication;
+package matrix.discordbot.communication;
 
-import matrix.discordBot.Bot;
+import matrix.discordbot.Bot;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import mindustry.gen.Call;
