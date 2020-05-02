@@ -71,10 +71,10 @@ public class Matrix extends Plugin {
                 if (!msg.startsWith("/")) {
                     if (!event.player.isAdmin && Boolean.parseBoolean(Config.get("chatGuard"))) {
                         if (!ChatGuard.check(msg)) {
-                            SendToDiscord.send(nick, RemoveColors.remove.apply(msg));
+                            SendToDiscord.sendChatMessage(nick, RemoveColors.remove.apply(msg), false);
                         } else event.player.sendMessage(ConfigTranslate.get("dontSwear"));
                     } else {
-                        SendToDiscord.send(nick, RemoveColors.remove.apply(msg));
+                        SendToDiscord.sendChatMessage(nick, RemoveColors.remove.apply(msg), true);
                     }
                 } else SendToDiscord.log(nick, msg);
             }
