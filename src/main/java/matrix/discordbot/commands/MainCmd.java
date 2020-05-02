@@ -1,9 +1,6 @@
 package matrix.discordbot.commands;
 
-import matrix.discordbot.commands.map.ChangeCmd;
-import matrix.discordbot.commands.map.MapCmd;
-import matrix.discordbot.commands.map.MapsCmd;
-import matrix.discordbot.commands.map.UploadCmd;
+import matrix.discordbot.commands.map.*;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import org.javacord.api.entity.message.Message;
@@ -34,6 +31,8 @@ public class MainCmd implements MessageCreateListener {
             ChangeCmd.main(event);
         } else if (msg.getContent().startsWith(Config.get("prefix") + ConfigTranslate.get("cmd.uploadMap.name"))) {
             UploadCmd.main(event);
+        } else if (msg.getContent().startsWith(Config.get("prefix") + ConfigTranslate.get("cmd.deleteMap.name"))) {
+            DeleteCmd.main(event);
         }
     }
 }
