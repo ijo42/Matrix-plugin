@@ -16,6 +16,7 @@ import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.util.logging.ExceptionLogger;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,6 +88,36 @@ public class Bot {
                     message = message.substring(0, message.indexOf("{1}")) + message.substring(message.indexOf("{1}"));
                 sendMessage(Config.get("stuffChannelID"), message);
             }
+        }
+    }
+
+    public static boolean isReportEnabled() {
+        return Config.has("stuffRoleID") && Config.has("stuffChannelID") && Bot.getRoleFromID(Config.get("stuffRoleID")).isPresent() && Bot.getTextChannelFromID(Config.get("stuffChannelID")).isPresent();
+    }
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    public void report(String suspectName, String reporter, Optional<String> reason) {
+        Role stuff = Bot.getRoleFromID(Config.get("stuffRoleID")).get();
+        TextChannel stuffChat = Bot.getTextChannelFromID(Config.get("stuffChannelID")).get();
+        if (reason.isPresent()) {
+            new MessageBuilder()
+                    .setEmbed(new EmbedBuilder()
+                            .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
+                            .setDescription(stuff.getMentionTag())
+                            .addField(Config.get("cmd.grief.suspectName"), suspectName)
+                            .addField(Config.get("cmd.grief.suspectReason"), reason.get())
+                            .setColor(Color.ORANGE)
+                            .setFooter(ConfigTranslate.get("cmd.grief.reporter") + reporter))
+                    .send(stuffChat);
+        } else {
+            new MessageBuilder()
+                    .setEmbed(new EmbedBuilder()
+                            .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
+                            .setDescription(stuff.getMentionTag())
+                            .addField(Config.get("cmd.grief.suspectName"), suspectName)
+                            .setColor(Color.ORANGE)
+                            .setFooter(ConfigTranslate.get("cmd.grief.reporter") + reporter))
+                    .send(stuffChat);
         }
     }
 }

@@ -15,13 +15,9 @@ import mindustry.game.EventType;
 import mindustry.game.Team;
 import mindustry.gen.Call;
 import mindustry.plugin.Plugin;
-import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.message.MessageBuilder;
-import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.entity.permission.Role;
 
-import java.awt.*;
 import java.util.HashMap;
+import java.util.Optional;
 
 public class Matrix extends Plugin {
 
@@ -199,15 +195,14 @@ public class Matrix extends Plugin {
     }
 
     private void griefCommand(String[] args, Player player) {
-        if (!Config.has("stuffRoleID") || !Config.has("stuffChannelID") || !Bot.getRoleFromID(Config.get("stuffRoleID")).isPresent() || !Bot.getTextChannelFromID(Config.get("stuffChannelID")).isPresent()) {
+        if (!Bot.isReportEnabled()) {
             player.sendMessage(ConfigTranslate.get("cmd.grief.disabled"));
             return;
         }
 
         for (Long key : cooldowns.keySet()) {
-            if (key + CDT < System.currentTimeMillis() / 1000L) {
-                cooldowns.remove(key);
-            } else if (player.uuid.equals(cooldowns.get(key))) {
+            if (key + CDT < System.currentTimeMillis() / 1000L) cooldowns.remove(key);
+            else if (player.uuid.equals(cooldowns.get(key))) {
                 player.sendMessage(ConfigTranslate.get("cmd.grief.cooldown"));
                 return;
             }
@@ -225,43 +220,18 @@ public class Matrix extends Plugin {
             Player found = null;
             if (args[ 0 ].length() > 1 && args[ 0 ].startsWith("#") && Strings.canParseInt(args[ 0 ].substring(1))) {
                 int id = Strings.parseInt(args[ 0 ].substring(1));
-                for (Player p : Vars.playerGroup.all()) {
+                for (Player p : Vars.playerGroup.all())
                     if (p.id == id) {
                         found = p;
                         break;
                     }
+            } else for (Player p : Vars.playerGroup.all())
+                if (p.name.equalsIgnoreCase(args[ 0 ])) {
+                    found = p;
+                    break;
                 }
-            } else {
-                for (Player p : Vars.playerGroup.all()) {
-                    if (p.name.equalsIgnoreCase(args[ 0 ])) {
-                        found = p;
-                        break;
-                    }
-                }
-            }
             if (found != null) {
-                Role stuff = Bot.getRoleFromID(Config.get("stuffRoleID")).get();
-                TextChannel stuffChat = Bot.getTextChannelFromID(Config.get("stuffChannelID")).get();
-                if (args.length > 1) {
-                    new MessageBuilder()
-                            .setEmbed(new EmbedBuilder()
-                                    .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
-                                    .setDescription(stuff.getMentionTag())
-                                    .addField(Config.get("cmd.grief.suspectName"), found.name)
-                                    .addField(Config.get("cmd.grief.suspectReason"), args[ 1 ])
-                                    .setColor(Color.ORANGE)
-                                    .setFooter(ConfigTranslate.get("cmd.grief.reporter") + player.name))
-                            .send(stuffChat);
-                } else {
-                    new MessageBuilder()
-                            .setEmbed(new EmbedBuilder()
-                                    .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
-                                    .setDescription(stuff.getMentionTag())
-                                    .addField(Config.get("cmd.grief.suspectName"), found.name)
-                                    .setColor(Color.ORANGE)
-                                    .setFooter(ConfigTranslate.get("cmd.grief.reporter") + player.name))
-                            .send(stuffChat);
-                }
+                bot.report(found.name, player.name, Optional.ofNullable(args[ 1 ]));
                 Call.sendMessage(found.name + ConfigTranslate.get("cmd.grief.successfulSend"));
                 cooldowns.put(System.currentTimeMillis() / 1000L, player.uuid);
             } else player.sendMessage(ConfigTranslate.get("cmd.grief.notFound"));
