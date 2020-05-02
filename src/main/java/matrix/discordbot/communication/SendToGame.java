@@ -22,7 +22,7 @@ public class SendToGame implements MessageCreateListener {
 
     private boolean preCheck(MessageCreateEvent event) {
         boolean result = false;
-        if (!event.getMessage().getAuthor().isUser()) result = true;
+        if (!event.getMessage().getAuthor().isBotUser()) result = true;
         if (event.getMessage().isPrivateMessage()) result = true;
         if (event.getMessage().getContent().isEmpty()) result = true;
         if (!event.getChannel().getIdAsString().equals(Config.get("liveChannelId"))) result = true;

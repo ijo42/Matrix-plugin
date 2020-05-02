@@ -1,5 +1,6 @@
 package matrix.discordbot.commands.map;
 
+import matrix.utils.ChatGuard;
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;
 import mindustry.core.GameState;
@@ -29,8 +30,8 @@ public class MapCmd {
 
         embedCreateSpec.setDescription(ConfigTranslate.get("cmd.map.description"));
 
-        embedCreateSpec.addField(ConfigTranslate.get("cmd.map"), Vars.world.getMap().name(), true);
-        embedCreateSpec.addField(ConfigTranslate.get("cmd.map.author"), Vars.world.getMap().author(), true);
+        embedCreateSpec.addField(ConfigTranslate.get("cmd.map"), ChatGuard.removeColors.apply(Vars.world.getMap().name()), true);
+        embedCreateSpec.addField(ConfigTranslate.get("cmd.map.author"), ChatGuard.removeColors.apply(Vars.world.getMap().author()), true);
         embedCreateSpec.addField(ConfigTranslate.get("cmd.map.wave"), String.valueOf(Vars.state.wave), true);
         embedCreateSpec.addField(ConfigTranslate.get("cmd.map.enemies"), String.valueOf(Vars.state.enemies), true);
         embedCreateSpec.addField(ConfigTranslate.get("cmd.map.online"), String.valueOf(Vars.playerGroup.size()), true);

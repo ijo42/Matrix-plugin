@@ -72,15 +72,15 @@ public class Map {
         Block block = Vars.content.blocks().find(b -> b.name.equals(args[0]));
 
         if (block != null) {
-            player.sendMessage(ConfigTranslate.get("cmd.setBlock.setted"));
+            player.sendMessage(ConfigTranslate.get("cmd.setBlock.successful"));
             Vars.world.tile(x, y).setBlock(block);
             Vars.world.tile(x, y).setTeam(player.getTeam());
 
-            for(int id = 0; id < Vars.playerGroup.all().size; id++){
+            for (int id = 0; id < Vars.playerGroup.all().size; id++) {
                 Player pl = Vars.playerGroup.all().get(id);
                 Vars.netServer.sendWorldData(pl);
             }
-        } else player.sendMessage(ConfigTranslate.get("cmd.setBlock.nosetted"));
+        } else player.sendMessage(ConfigTranslate.get("cmd.setBlock.failed"));
     }
 
 }

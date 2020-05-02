@@ -1,5 +1,6 @@
 package matrix.discordbot.commands.map;
 
+import matrix.utils.ChatGuard;
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;
 import mindustry.maps.Map;
@@ -18,7 +19,7 @@ public class MapsCmd {
 
         for (Map m : Vars.maps.customMaps()) {
             embedCreateSpec.addField(ConfigTranslate.get("cmd.maps.entryKey")
-                            .replace("{0}", m.name()),
+                            .replace("{0}", ChatGuard.removeColors.apply(m.name())),
                     ConfigTranslate.get("cmd.maps.entryValue")
                             .replace("{0}", String.valueOf(m.width))
                             .replace("{1}", String.valueOf(m.width)), true);
