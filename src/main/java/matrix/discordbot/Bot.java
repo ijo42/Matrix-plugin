@@ -51,6 +51,10 @@ public class Bot {
         return Matrix.INSTANCE.getBot().api.getRoleById(id);
     }
 
+    public static Optional<TextChannel> getTextChannelFromID(String id) {
+        return Matrix.INSTANCE.getBot().api.getTextChannelById(id);
+    }
+
     public void sendMessage(String channelID, String message) {
         Optional<TextChannel> channel = api.getTextChannelById(channelID);
         if (!channel.isPresent()) {
