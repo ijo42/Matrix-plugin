@@ -8,9 +8,14 @@ import java.util.Properties;
 
 public class Config {
     private static Properties prop;
+    private static final String MAIN_CONFIG = "config/mods/Matrix/config.properties";
+    private static final String CHAT_GUARD_CONFIG = "config/mods/Matrix/ChatGuard.properties";
+    private static final String MAIN_DIR = "config/mods/Matrix";
+    private static final String BUNDLES_DIR = "config/mods/Matrix/bundles";
+
     public static void main() {
         // Создаём папку если не существует
-        final File dir1 = new File("config/mods/Matrix");
+        final File dir1 = new File(MAIN_DIR);
         if (!dir1.exists()) {
             if (!dir1.mkdir()) {
                 Log.warn("Dir creation fail");
@@ -18,7 +23,7 @@ public class Config {
             }
         }
 
-        final File dir2 = new File("config/mods/Matrix/bundles");
+        final File dir2 = new File(BUNDLES_DIR);
         if (!dir2.exists()) {
             if (!dir2.mkdir()) {
                 Log.warn("Dir creation fail");
@@ -26,13 +31,13 @@ public class Config {
             }
         }
 
-        File file1 = new File("config/mods/Matrix/config.properties");
+        File file1 = new File(MAIN_CONFIG);
         if (!file1.exists()) {
             Log.warn("The config file was successfully generated.");
             Log.warn("Don't forget to change the token in the config.");
 
             try (InputStream in = Config.class.getClassLoader().getResourceAsStream("config.properties");
-                 OutputStream out = new FileOutputStream("config/mods/Matrix/config.properties")) {
+                 OutputStream out = new FileOutputStream(MAIN_CONFIG)) {
                 int data;
                 assert in != null;
                 while ((data = in.read()) != -1) {
@@ -75,12 +80,12 @@ public class Config {
             }
         }
 
-        File file3 = new File("config/mods/Matrix/ChatGuard.properties");
+        File file3 = new File(CHAT_GUARD_CONFIG);
         if(!file3.exists()) {
             try (InputStream in = Config.class
                     .getClassLoader()
                     .getResourceAsStream("ChatGuard.properties");
-                 OutputStream out = new FileOutputStream("config/mods/Matrix/ChatGuard.properties")) {
+                 OutputStream out = new FileOutputStream(CHAT_GUARD_CONFIG)) {
                 int data;
                 assert in != null;
                 while ((data = in.read()) != -1) {
@@ -93,7 +98,7 @@ public class Config {
         try {
             FileInputStream fileInputStream;
             prop = new Properties();
-            fileInputStream = new FileInputStream("config/mods/Matrix/config.properties");
+            fileInputStream = new FileInputStream(MAIN_CONFIG);
             prop.load(fileInputStream);
         } catch (IOException e) {
             e.printStackTrace();
@@ -112,5 +117,24 @@ public class Config {
         out = prop.getProperty(nameStr);
         out = new String(out.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
         return !out.isEmpty();
+    }
+
+    public static void set(String key, String value) {
+        OutputStream out = null;
+        try {
+            prop.setProperty(key, value);
+            out = new FileOutputStream(MAIN_CONFIG);
+            prop.store(out, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

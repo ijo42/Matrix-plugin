@@ -8,9 +8,7 @@ import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.event.message.MessageCreateEvent;
 
-import java.io.*;
 import java.util.Optional;
-import java.util.Properties;
 
 
 public class SetMsgChannel {
@@ -28,28 +26,6 @@ public class SetMsgChannel {
         }
         Matrix.INSTANCE.getBot().sendMessage(channel.getIdAsString(), (ConfigTranslate.get("cmd.setMsgChannel.ok")));
         String id = channel.getIdAsString();
-
-        File file = new File("config/mods/Matrix/config.properties");
-
-        InputStream in = null;
-        OutputStream out = null;
-
-        Properties props = new Properties();
-        try {
-            in = new FileInputStream(file);
-            props.load(in);
-            props.setProperty("discordChannelId", id);
-            out = new FileOutputStream(file);
-            props.store(out, null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (in != null ) {
-                try{in.close();}catch(IOException e){e.printStackTrace();}
-            }
-            if (out != null) {
-                try{out.close();}catch(IOException e){e.printStackTrace();}
-            }
-        }
+        Config.set("liveChannelId", id);
     }
 }
