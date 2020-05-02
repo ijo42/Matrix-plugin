@@ -17,14 +17,13 @@ import mindustry.gen.Call;
 import mindustry.plugin.Plugin;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 public class Matrix extends Plugin {
 
     public static Matrix INSTANCE;
     private final Bot bot;
     private final Long CDT = 300L;
-    private HashMap<Long, String> cooldowns = new HashMap<>(); //uuid
+    private HashMap<Long, String> cooldowns = new HashMap<>();
 
     public Matrix() {
         Config.main();
@@ -120,10 +119,6 @@ public class Matrix extends Plugin {
         } else player.sendMessage("[gray][[[#F7E018]JS[gray]]: [coral]" + ConfigTranslate.get("cmd.js.isNotAdmin"));
     }
 
-    public Bot getBot() {
-        return bot;
-    }
-
     private static void memoryCommand(String[] args, Player player) {
         if (player.isAdmin) {
             player.sendMessage(ConfigTranslate.get("cmd.memory.msg")
@@ -136,7 +131,7 @@ public class Matrix extends Plugin {
         }
     }
 
-    private static void boradcastCommand(String[] args, Player player) {
+    private static void broadcastCommand(String[] args, Player player) {
         if (player.isAdmin) Broadcast.bc(args, player);
     }
 
@@ -187,7 +182,7 @@ public class Matrix extends Plugin {
         handler.register(ConfigTranslate.get("cmd.setBlock.name"), ConfigTranslate.get("cmd.setBlock.params"), ConfigTranslate.get("cmd.setBlock.description"), Matrix::setBlockCommand);
 
         handler.register(ConfigTranslate.get("cmd.infiniteResources.name"), "<on/off>", ConfigTranslate.get("cmd.infiniteResources.description"), Matrix::infinityResourceCommand);
-        handler.register(ConfigTranslate.get("cmd.broadcast.name"), "<info...>", ConfigTranslate.get("cmd.broadcast.description"), Matrix::boradcastCommand);
+        handler.register(ConfigTranslate.get("cmd.broadcast.name"), "<info...>", ConfigTranslate.get("cmd.broadcast.description"), Matrix::broadcastCommand);
         handler.register(ConfigTranslate.get("cmd.memory.name"), "", ConfigTranslate.get("cmd.memory.description"), Matrix::memoryCommand);
         handler.register(ConfigTranslate.get("cmd.js.name"), "<script...>", "Run arbitrary Javascript.", Matrix::jsCommand);
 
@@ -231,11 +226,15 @@ public class Matrix extends Plugin {
                     break;
                 }
             if (found != null) {
-                bot.report(found.name, player.name, Optional.ofNullable(args[ 1 ]));
+                bot.report(found.name, player.name, args[ 1 ]);
                 Call.sendMessage(found.name + ConfigTranslate.get("cmd.grief.successfulSend"));
                 cooldowns.put(System.currentTimeMillis() / 1000L, player.uuid);
             } else player.sendMessage(ConfigTranslate.get("cmd.grief.notFound"));
         }
+    }
+
+    public Bot getBot() {
+        return bot;
     }
 }
 

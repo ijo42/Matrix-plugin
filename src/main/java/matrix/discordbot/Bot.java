@@ -1,5 +1,6 @@
 package matrix.discordbot;
 
+import arc.util.ArcAnnotate;
 import arc.util.Log;
 import matrix.Matrix;
 import matrix.discordbot.commands.MainCmd;
@@ -34,9 +35,12 @@ public class Bot {
             User bot = api.getYourself();
             Log.info(String.format("Logged in as %s#%s", bot.getName(), bot.getDiscriminator()));
             api.setMessageCacheSize(1, 30);
-            Runtime.getRuntime().addShutdownHook(new ShootDownHook());
             api.updateActivity(ActivityType.PLAYING, Config.get("status"));
         }).exceptionally(ExceptionLogger.get());
+
+        BotThread bt = new BotThread(Thread.currentThread());
+        bt.setDaemon(false);
+        bt.start();
     }
 
     public static Role getHighestRole(List<Role> roles) {
@@ -74,38 +78,21 @@ public class Bot {
         new MessageBuilder().setEmbed(spec).send(channel.get());
     }
 
-    public class ShootDownHook extends Thread {
-        @Override
-        public void run() {
-            Optional<Role> stuff = api.getRoleById(Config.get("stuffRoleID"));
-            if (stuff.isPresent()) {
-                stuff.get().updateMentionableFlag(true);
-                String message = ConfigTranslate.get("serverDownMessage");
-                message = message.replace("{0}", stuff.get().getMentionTag());
-                if (Config.has("serverName"))
-                    message = message.replace("{1}", Config.get("serverName"));
-                else
-                    message = message.substring(0, message.indexOf("{1}")) + message.substring(message.indexOf("{1}"));
-                sendMessage(Config.get("stuffChannelID"), message);
-            }
-        }
-    }
-
     public static boolean isReportEnabled() {
         return Config.has("stuffRoleID") && Config.has("stuffChannelID") && Bot.getRoleFromID(Config.get("stuffRoleID")).isPresent() && Bot.getTextChannelFromID(Config.get("stuffChannelID")).isPresent();
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    public void report(String suspectName, String reporter, Optional<String> reason) {
+    public void report(String suspectName, String reporter, @ArcAnnotate.NonNull String reason) {
         Role stuff = Bot.getRoleFromID(Config.get("stuffRoleID")).get();
         TextChannel stuffChat = Bot.getTextChannelFromID(Config.get("stuffChannelID")).get();
-        if (reason.isPresent()) {
+        if (reason != null) {
             new MessageBuilder()
                     .setEmbed(new EmbedBuilder()
                             .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
                             .setDescription(stuff.getMentionTag())
                             .addField(Config.get("cmd.grief.suspectName"), suspectName)
-                            .addField(Config.get("cmd.grief.suspectReason"), reason.get())
+                            .addField(Config.get("cmd.grief.suspectReason"), reason)
                             .setColor(Color.ORANGE)
                             .setFooter(ConfigTranslate.get("cmd.grief.reporter") + reporter))
                     .send(stuffChat);
@@ -118,6 +105,45 @@ public class Bot {
                             .setColor(Color.ORANGE)
                             .setFooter(ConfigTranslate.get("cmd.grief.reporter") + reporter))
                     .send(stuffChat);
+        }
+    }
+
+    public class BotThread extends Thread {
+        Role stuff;
+        String serverName;
+        String serverDownChannelID;
+        String message;
+        private Thread mt;
+
+        public BotThread(Thread _mt) {
+            mt = _mt;
+            if (!api.getRoleById(Config.get("stuffRoleID")).isPresent() || !getTextChannelFromID(Config.get("stuffChannelID")).isPresent())
+                return;
+            stuff = api.getRoleById(Config.get("stuffRoleID")).get();
+            serverName = Config.get("serverName");
+            serverDownChannelID = getTextChannelFromID(Config.get("stuffChannelID")).get().getIdAsString();
+            message = ConfigTranslate.get("serverDownMessage").replace("{0}", stuff.getMentionTag());
+
+            if (Config.has("serverName"))
+                message = message.replace("{1}", Config.get("serverName"));
+            else
+                message = message.substring(0, message.indexOf("{1}")) + message.substring(message.indexOf("{1}"));
+        }
+
+        @Override
+        public void run() {
+            while (this.mt.isAlive()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception ignored) {
+                }
+            }
+            if (stuff != null) {
+                if (!stuff.isMentionable())
+                    stuff.updateMentionableFlag(true);
+                sendMessage(serverDownChannelID, message);
+            }
+            api.disconnect();
         }
     }
 }
