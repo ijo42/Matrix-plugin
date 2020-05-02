@@ -2,41 +2,44 @@ package matrix.discordbot.commands.map;
 
 import arc.Core;
 import arc.files.Fi;
+import matrix.discordbot.Bot;
+import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;
 import mindustry.io.SaveIO;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.MessageAttachment;
+import org.javacord.api.entity.permission.Role;
 import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.zip.InflaterInputStream;
 
-public class MapUploadCmd {
+public class UploadCmd {
     public static void main(MessageCreateEvent event) {
         TextChannel channel = event.getMessage().getChannel();
-        if (channel == null)
+        Optional<Role> optRole = Bot.getRoleFromID(Config.get("stuffRoleID"));
+        if (event.isPrivateMessage() || channel == null || !event.getMessageAuthor().asUser().isPresent() || !event.getServer().isPresent() || !optRole.isPresent())
             return;
-        String message;
-        List<MessageAttachment> ml = new LinkedList<>();
-        for (MessageAttachment ma : event.getMessage().getAttachments()) {
-            if (ma.getFileName().split("\\.", 2)[ 1 ].trim().equals("msav")) {
-                ml.add(ma);
-            }
+
+        if (!event.getMessageAuthor().asUser().get().getRoles(event.getServer().get())
+                .contains(optRole.get())) {
+            channel.sendMessage(ConfigTranslate.get("noPerm"));
+            return;
         }
-        if (ml.size() != 1) {
+
+        String message;
+        MessageAttachment attachment = event.getMessage().getAttachments().get(0);
+        if (attachment == null || !isMSAVFile(attachment)) {
             message = ConfigTranslate.get("cmd.uploadMap.missing");
-        } else if (Core.settings.getDataDirectory().child("maps").child(ml.get(0).getFileName()).exists()) {
+        } else if (Core.settings.getDataDirectory().child("maps").child(attachment.getFileName()).exists()) {
             message = ConfigTranslate.get("cmd.uploadMap.already");
-
         } else {
-
-            CompletableFuture<byte[]> cf = ml.get(0).downloadAsByteArray();
-            Fi fh = Core.settings.getDataDirectory().child("maps").child(ml.get(0).getFileName());
+            CompletableFuture<byte[]> cf = attachment.downloadAsByteArray();
+            Fi fh = Core.settings.getDataDirectory().child("maps").child(attachment.getFileName());
 
             try {
                 byte[] data = cf.get();
@@ -45,7 +48,7 @@ public class MapUploadCmd {
                 } else {
                     fh.writeBytes(data, false);
                     Vars.maps.reload();
-                    message = ConfigTranslate.get("cmd.uploadMap.successful").replace("{0}", ml.get(0).getFileName());
+                    message = ConfigTranslate.get("cmd.uploadMap.successful").replace("{0}", attachment.getFileName());
                 }
             } catch (java.lang.RuntimeException e) {
                 if (!e.getMessage().equals("incorrect header check"))
@@ -58,6 +61,10 @@ public class MapUploadCmd {
             }
         }
         channel.sendMessage(message);
+    }
+
+    private static boolean isMSAVFile(MessageAttachment attachment) {
+        return attachment.getFileName().endsWith(Vars.mapExtension);
     }
 
 }

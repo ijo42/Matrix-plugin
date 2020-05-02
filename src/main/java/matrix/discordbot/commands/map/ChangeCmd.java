@@ -11,7 +11,7 @@ import mindustry.maps.Map;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.event.message.MessageCreateEvent;
 
-public class MapChangeCmd {
+public class ChangeCmd {
     public static void main(MessageCreateEvent event) {
         TextChannel channel = event.getMessage().getChannel();
         if (channel == null)
@@ -19,7 +19,7 @@ public class MapChangeCmd {
         String[] splitted = event.getMessage().getContent().split(" ", 2);
         String message;
         if (splitted.length == 1) {
-            message = ConfigTranslate.get("cmd.changeMap.params");
+            message = ConfigTranslate.get("cmd.changeMap.usage");
         } else {
             Map found;
             try {
@@ -30,6 +30,7 @@ public class MapChangeCmd {
             }
             if (found == null) {
                 message = ConfigTranslate.get("cmd.changeMap.404");
+                MapsCmd.main(event);
             } else {
 
                 Fi temp = Core.settings.getDataDirectory().child("maps").child("temp");
