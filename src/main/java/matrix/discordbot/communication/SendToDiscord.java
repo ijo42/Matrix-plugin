@@ -13,8 +13,7 @@ public class SendToDiscord {
 
     public static void sendChatMessage(String nick, String msg, boolean isAdmin) {
         if (msg.isEmpty()) return;
-        msg = msg.replace("@here", ConfigTranslate.get("pingDeleted")).replace("@everyone", ConfigTranslate.get("pingDeleted"));
-        //TODO: <@&ROLE_ID> replace by regexp
+        msg = ChatGuard.removeMentions.apply(msg);
         EmbedBuilder embed = new EmbedBuilder()
                 .setColor(isAdmin ? Color.RED : Color.CYAN)
                 .setAuthor(ChatGuard.removeColors.apply(nick), null, (Config.has("messagerAvatarURL") ? Config.get("messagerAvatarURL") : null))

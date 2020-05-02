@@ -19,6 +19,13 @@ public class ChatGuard {
         return str;
     };
 
+    public static UnaryOperator<String> removeMentions = str -> {
+        str = str.replaceAll("@here", ConfigTranslate.get("pingDeleted"));
+        str = str.replaceAll("@everyone", ConfigTranslate.get("pingDeleted"));
+        str = str.replace("<@([^<]*)>", ConfigTranslate.get("pingDeleted"));
+        return str;
+    };
+
     public static boolean check(String content) {
         return Arrays.stream(get()).anyMatch(x -> x.equalsIgnoreCase(content));
     }
