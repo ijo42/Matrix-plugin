@@ -1,5 +1,6 @@
 package matrix.discordbot.commands;
 
+import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import matrix.utils.SystemInfo;
 import org.javacord.api.entity.channel.TextChannel;
@@ -18,9 +19,9 @@ public class Memory {
 
         embedCreateSpec.setColor(
                 new Color(
-                        Integer.parseInt(ConfigTranslate.get("cmd.memory.color.red")),
-                        Integer.parseInt(ConfigTranslate.get("cmd.memory.color.green")),
-                        Integer.parseInt(ConfigTranslate.get("cmd.memory.color.blue"))
+                        Integer.parseInt(Config.get("cmd.memory.color.red")),
+                        Integer.parseInt(Config.get("cmd.memory.color.green")),
+                        Integer.parseInt(Config.get("cmd.memory.color.blue"))
                 ));
         embedCreateSpec.setDescription(ConfigTranslate.get("cmd.memory.description"));
 

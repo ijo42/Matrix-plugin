@@ -4,6 +4,7 @@ import arc.util.Log;
 import matrix.Matrix;
 import matrix.discordbot.commands.MainCmd;
 import matrix.discordbot.communication.SendToGame;
+import matrix.utils.ChatGuard;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;
@@ -90,19 +91,19 @@ public class Bot {
                     .setEmbed(new EmbedBuilder()
                             .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
                             .setDescription(stuff.getMentionTag())
-                            .addField(ConfigTranslate.get("cmd.grief.suspectName"), suspectName)
+                            .addField(ConfigTranslate.get("cmd.grief.suspectName"), ChatGuard.removeColors.apply(suspectName))
                             .addField(ConfigTranslate.get("cmd.grief.suspectReason"), reason)
                             .setColor(Color.ORANGE)
-                            .setFooter(ConfigTranslate.get("cmd.grief.reporter") + reporter))
+                            .setFooter(ConfigTranslate.get("cmd.grief.reporter") + ChatGuard.removeColors.apply(reporter)))
                     .send(stuffChat);
         } else {
             new MessageBuilder()
                     .setEmbed(new EmbedBuilder()
                             .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
                             .setDescription(stuff.getMentionTag())
-                            .addField(Config.get("cmd.grief.suspectName"), suspectName)
+                            .addField(Config.get("cmd.grief.suspectName"), ChatGuard.removeColors.apply(suspectName))
                             .setColor(Color.ORANGE)
-                            .setFooter(ConfigTranslate.get("cmd.grief.reporter") + reporter))
+                            .setFooter(ConfigTranslate.get("cmd.grief.reporter") + ChatGuard.removeColors.apply(reporter)))
                     .send(stuffChat);
         }
     }

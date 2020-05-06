@@ -1,6 +1,7 @@
 package matrix.discordbot.commands.map;
 
 import matrix.utils.ChatGuard;
+import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;
 import mindustry.core.GameState;
@@ -23,9 +24,9 @@ public class MapCmd {
 
         embedCreateSpec.setColor(
                 new Color(
-                        Integer.parseInt(ConfigTranslate.get("cmd.map.color.red")),
-                        Integer.parseInt(ConfigTranslate.get("cmd.map.color.green")),
-                        Integer.parseInt(ConfigTranslate.get("cmd.map.color.blue"))
+                        Integer.parseInt(Config.get("cmd.map.color.red")),
+                        Integer.parseInt(Config.get("cmd.map.color.green")),
+                        Integer.parseInt(Config.get("cmd.map.color.blue"))
                 ));
 
         embedCreateSpec.setDescription(ConfigTranslate.get("cmd.map.description"));

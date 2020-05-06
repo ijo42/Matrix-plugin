@@ -55,9 +55,9 @@ public class ItemsCmd {
             embedCreateSpec.setThumbnail(Config.get("cmd.items.imageLink"));
 
             embedCreateSpec.setColor(new Color(
-                    Integer.parseInt(ConfigTranslate.get("cmd.items.color.red")),
-                    Integer.parseInt(ConfigTranslate.get("cmd.items.color.green")),
-                    Integer.parseInt(ConfigTranslate.get("cmd.items.color.blue"))
+                    Integer.parseInt(Config.get("cmd.items.color.red")),
+                    Integer.parseInt(Config.get("cmd.items.color.green")),
+                    Integer.parseInt(Config.get("cmd.items.color.blue"))
             ));
 
             embedCreateSpec.setDescription(ConfigTranslate.get("cmd.items.description")
