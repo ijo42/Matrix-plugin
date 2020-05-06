@@ -23,7 +23,6 @@ import java.util.Optional;
 
 public class Bot {
     DiscordApi api;
-
     public Bot() {
         Config.get("token");
         if (!Config.has("token"))
@@ -37,10 +36,6 @@ public class Bot {
             api.setMessageCacheSize(1, 30);
             api.updateActivity(ActivityType.PLAYING, Config.get("status"));
         }).exceptionally(ExceptionLogger.get());
-
-        BotThread bt = new BotThread(Thread.currentThread());
-        bt.setDaemon(false);
-        bt.start();
     }
 
     public static Role getHighestRole(List<Role> roles) {
@@ -83,16 +78,16 @@ public class Bot {
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    public void report(String suspectName, String reporter, @ArcAnnotate.NonNull String reason) {
+    public void report(String suspectName, String reporter, String reason) {
         Role stuff = Bot.getRoleFromID(Config.get("stuffRoleID")).get();
         TextChannel stuffChat = Bot.getTextChannelFromID(Config.get("stuffChannelID")).get();
-        if (reason != null) {
+        if (!reason.isEmpty()) {
             new MessageBuilder()
                     .setEmbed(new EmbedBuilder()
                             .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
                             .setDescription(stuff.getMentionTag())
-                            .addField(Config.get("cmd.grief.suspectName"), suspectName)
-                            .addField(Config.get("cmd.grief.suspectReason"), reason)
+                            .addField(ConfigTranslate.get("cmd.grief.suspectName"), suspectName)
+                            .addField(ConfigTranslate.get("cmd.grief.suspectReason"), reason)
                             .setColor(Color.ORANGE)
                             .setFooter(ConfigTranslate.get("cmd.grief.reporter") + reporter))
                     .send(stuffChat);
@@ -109,12 +104,7 @@ public class Bot {
     }
 
     public class BotThread extends Thread {
-        Role stuff;
-        String serverName;
-        String serverDownChannelID;
-        String message;
         private Thread mt;
-
         public BotThread(Thread _mt) {
             mt = _mt;
             if (!api.getRoleById(Config.get("stuffRoleID")).isPresent() || !getTextChannelFromID(Config.get("stuffChannelID")).isPresent())
@@ -137,11 +127,6 @@ public class Bot {
                     Thread.sleep(1000);
                 } catch (Exception ignored) {
                 }
-            }
-            if (stuff != null) {
-                if (!stuff.isMentionable())
-                    stuff.updateMentionableFlag(true);
-                sendMessage(serverDownChannelID, message);
             }
             api.disconnect();
         }

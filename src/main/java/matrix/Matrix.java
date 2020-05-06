@@ -184,6 +184,7 @@ public class Matrix extends Plugin {
         handler.register(ConfigTranslate.get("cmd.infiniteResources.name"), "<on/off>", ConfigTranslate.get("cmd.infiniteResources.description"), Matrix::infinityResourceCommand);
         handler.register(ConfigTranslate.get("cmd.broadcast.name"), "<info...>", ConfigTranslate.get("cmd.broadcast.description"), Matrix::broadcastCommand);
         handler.register(ConfigTranslate.get("cmd.memory.name"), "", ConfigTranslate.get("cmd.memory.description"), Matrix::memoryCommand);
+        handler.register(ConfigTranslate.get("cmd.grief.name"), ConfigTranslate.get("cmd.grief.params"), ConfigTranslate.get("cmd.grief.description").replace("{0}", ConfigTranslate.get("cmd.grief.name")), this::griefCommand);
         handler.register(ConfigTranslate.get("cmd.js.name"), "<script...>", "Run arbitrary Javascript.", Matrix::jsCommand);
 
         handler.register(ConfigTranslate.get("cmd.grief.name"), "<id> <причина>", ConfigTranslate.get("cmd.grief.description").replace("{0}", ConfigTranslate.get("cmd.grief.name")), this::griefCommand);
@@ -202,7 +203,6 @@ public class Matrix extends Plugin {
                 return;
             }
         }
-
         if (args.length == 0) {
             StringBuilder builder = new StringBuilder();
             builder.append(ConfigTranslate.get("cmd.grief.available"));
@@ -226,10 +226,10 @@ public class Matrix extends Plugin {
                     break;
                 }
             if (found != null) {
-                bot.report(found.name, player.name, args[ 1 ]);
+                bot.report(found.name, player.name, (args.length == 2 ? args[ 1 ] : ""));
                 Call.sendMessage(found.name + ConfigTranslate.get("cmd.grief.successfulSend"));
                 cooldowns.put(System.currentTimeMillis() / 1000L, player.uuid);
-            } else player.sendMessage(ConfigTranslate.get("cmd.grief.notFound"));
+            } else player.sendMessage(ConfigTranslate.get("cmd.grief.notFound").replace("{0}", args[ 0 ]));
         }
     }
 

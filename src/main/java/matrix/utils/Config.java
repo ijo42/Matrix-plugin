@@ -106,10 +106,14 @@ public class Config {
     }
 
     public static String get(String nameStr) {
-        String out;
-        out = prop.getProperty(nameStr);
-        out = new String(out.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-        return out.isEmpty() ? "CONFIG_ERROR" : out;
+        String out = "CONFIG_ERROR";
+        try {
+            out = prop.getProperty(nameStr);
+            out = new String(out.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        } catch (NullPointerException npe) {
+            Log.err("Config missed an {0} parameter".replace("{0}", nameStr));
+        }
+        return out;
     }
 
     public static boolean has(String nameStr) {
