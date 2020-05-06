@@ -20,16 +20,15 @@ public class MainCmd implements MessageCreateListener {
 
     public static List<String> getCommands() {
         if (commands.isEmpty()) {
-            commands.add(SetMsgChannel.name);
-            commands.add(ItemsCmd.name);
-            commands.add(Memory.name);
-            commands.add(MapsCmd.name);
-            commands.add(MapCmd.name);
-            commands.add(ChangeCmd.name);
-            commands.add(UploadCmd.name);
-            commands.add(DeleteCmd.name);
-            commands.add(UploadCmd.name);
-            commands.add(BanCmd.name);
+            commands.add(ConfigTranslate.get("cmd." + ItemsCmd.name + ".name"));
+            commands.add(ConfigTranslate.get("cmd." + Memory.name + ".name"));
+            commands.add(ConfigTranslate.get("cmd." + MapsCmd.name + ".name"));
+            commands.add(ConfigTranslate.get("cmd." + MapCmd.name + ".name"));
+            commands.add(ConfigTranslate.get("cmd." + ChangeCmd.name + ".name"));
+            commands.add(ConfigTranslate.get("cmd." + UploadCmd.name + ".name"));
+            commands.add(ConfigTranslate.get("cmd." + DeleteCmd.name + ".name"));
+            commands.add(ConfigTranslate.get("cmd." + BanCmd.name + ".name"));
+            commands.add(ConfigTranslate.get("cmd." + UploadCmd.name + ".name"));
         }
         return commands;
     }
