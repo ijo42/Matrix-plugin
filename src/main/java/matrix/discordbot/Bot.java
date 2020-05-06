@@ -97,7 +97,7 @@ public class Bot {
                     .setEmbed(new EmbedBuilder()
                             .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
                             .setDescription(stuff.getMentionTag())
-                            .addField(ConfigTranslate.get("cmd.grief.suspectName"), ChatGuard.removeColors.apply(suspect.getKey()) + "||" + suspect.getValue() + "||")
+                            .addField(ConfigTranslate.get("cmd.grief.suspectName"), ChatGuard.removeColors.apply(suspect.getKey()) + " ||#" + suspect.getValue() + "||")
                             .addField(ConfigTranslate.get("cmd.grief.suspectReason"), reason)
                             .setColor(Color.ORANGE)
                             .setFooter(ConfigTranslate.get("cmd.grief.reporter") + ChatGuard.removeColors.apply(reporter)))
@@ -107,7 +107,7 @@ public class Bot {
                     .setEmbed(new EmbedBuilder()
                             .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
                             .setDescription(stuff.getMentionTag())
-                            .addField(Config.get("cmd.grief.suspectName"), ChatGuard.removeColors.apply(suspect.getKey()) + "||" + suspect.getValue() + "||")
+                            .addField(Config.get("cmd.grief.suspectName"), ChatGuard.removeColors.apply(suspect.getKey()) + " ||#" + suspect.getValue() + "||")
                             .setColor(Color.ORANGE)
                             .setFooter(ConfigTranslate.get("cmd.grief.reporter") + ChatGuard.removeColors.apply(reporter)))
                     .send(stuffChat);

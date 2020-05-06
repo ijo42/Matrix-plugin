@@ -2,10 +2,12 @@ package matrix.discordbot.commands;
 
 import arc.util.Strings;
 import matrix.discordbot.Bot;
+import matrix.utils.ChatGuard;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;
 import mindustry.entities.type.Player;
+import mindustry.gen.Call;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.event.message.MessageCreateEvent;
@@ -42,15 +44,21 @@ public class BanCmd extends MainCmd.Command {
                     }
             } else
                 for (Player p : Vars.playerGroup.all())
-                    if (p.name.equalsIgnoreCase(badBoy)) {
+                    if (ChatGuard.removeColors.apply(p.name).equalsIgnoreCase(badBoy)) {
                         found = p;
                         break;
                     }
             if (found != null) {
-                if (Vars.netServer.admins.banPlayer(found.uuid))
+                if (Vars.netServer.admins.banPlayer(found.uuid)) {
                     message = ConfigTranslate.get("cmd.banCmd.200").replace("{0}", found.name);
-                else
+                    Call.sendMessage(ConfigTranslate.get("cmd.banCmd.announcement").replace("{0}", found.name));
+                } else
                     message = ConfigTranslate.get("cmd.banCmd.error");
+                Player finalFound = found;
+                Vars.net.getConnections().forEach(x -> {
+                    if (x.player.con.address.equals(finalFound.con.address))
+                        x.kick("Banned");
+                });
             } else message = ConfigTranslate.get("cmd.banCmd.404").replace("{0}", badBoy);
         }
         channel.sendMessage(message);

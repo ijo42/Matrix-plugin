@@ -148,7 +148,7 @@ public class Matrix extends Plugin {
                 }
             if (found != null) {
                 bot.report(new Pair<>(found.name, String.valueOf(found.id)), player.name, (args.length == 2 ? args[ 1 ] : ""));
-                Call.sendMessage(found.name + ConfigTranslate.get("cmd.grief.successfulSend"));
+                Call.sendMessage(ChatGuard.removeColors.apply(found.name) + ConfigTranslate.get("cmd.grief.successfulSend"));
                 cooldowns.put(System.currentTimeMillis() / 1000L, player.uuid);
             } else player.sendMessage(ConfigTranslate.get("cmd.grief.404").replace("{0}", args[ 0 ]));
         }
