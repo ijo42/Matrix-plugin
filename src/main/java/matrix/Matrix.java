@@ -10,12 +10,10 @@ import matrix.discordbot.communication.SendToDiscord;
 import matrix.utils.*;
 import mindustry.Vars;
 import mindustry.core.GameState;
-import mindustry.core.NetServer;
 import mindustry.entities.type.Player;
 import mindustry.game.EventType;
 import mindustry.game.Team;
 import mindustry.gen.Call;
-import mindustry.net.Packets;
 import mindustry.plugin.Plugin;
 
 import java.util.HashMap;
@@ -164,18 +162,21 @@ public class Matrix extends Plugin {
         }
     }
 
-    private static void sendNWaves(String[] arg, Player player) {
+    private static void sendWaves(String[] arg, Player player) {
         if (player.isAdmin) {
             if (Integer.parseInt(arg[ 0 ]) > 0 && Integer.parseInt(arg[ 0 ]) < 100) {
                 player.sendMessage("[gray][[[#F7E018]Starting..[gray]]");
                 for (int i = 0; i < Integer.parseInt(arg[ 0 ]); i++) {
-                    NetServer.onAdminRequest(player, player, Packets.AdminAction.wave);
+                    Vars.spawner.spawnEnemies();
+                    ++Vars.state.wave;
                 }
+                Vars.state.wavetime = Vars.world.isZone() && Vars.world.getZone().isLaunchWave(Vars.state.wave) ? Vars.state.rules.waveSpacing * Vars.state.rules.launchWaveMultiplier : Vars.state.rules.waveSpacing;
+                Events.fire(new EventType.WaveEvent());
             } else
-                player.sendMessage("[gray][[[#F7E018]CMD[gray]]: [coral]" + ConfigTranslate.get("cmd.sendNWaves.limit"));
+                player.sendMessage("[gray][[[#F7E018]CMD[gray]]: [coral]" + ConfigTranslate.get("cmd.sendWaves.limit"));
 
         } else
-            player.sendMessage("[gray][[[#F7E018]CMD[gray]]: [coral]" + ConfigTranslate.get("cmd.sendNWaves.isNotAdmin"));
+            player.sendMessage("[gray][[[#F7E018]CMD[gray]]: [coral]" + ConfigTranslate.get("cmd.sendWaves.noPerms"));
     }
 
     private static void memoryCommand(String[] args, Player player) {
@@ -243,11 +244,9 @@ public class Matrix extends Plugin {
         handler.register(ConfigTranslate.get("cmd.infiniteResources.name"), "<on/off>", ConfigTranslate.get("cmd.infiniteResources.description"), Matrix::infinityResourceCommand);
         handler.register(ConfigTranslate.get("cmd.broadcast.name"), "<info...>", ConfigTranslate.get("cmd.broadcast.description"), Matrix::broadcastCommand);
         handler.register(ConfigTranslate.get("cmd.memory.name"), "", ConfigTranslate.get("cmd.memory.description"), Matrix::memoryCommand);
-        handler.register(ConfigTranslate.get("cmd.sendNWaves.name"), "<count>", "Run as much as you want waves.", Matrix::sendNWaves);
+        handler.register(ConfigTranslate.get("cmd.sendWaves.name"), "<count>", "Run as much as you want waves.", Matrix::sendWaves);
         handler.register(ConfigTranslate.get("cmd.grief.name"), ConfigTranslate.get("cmd.grief.params"), ConfigTranslate.get("cmd.grief.description").replace("{0}", ConfigTranslate.get("cmd.grief.name")), this::griefCommand);
         handler.register(ConfigTranslate.get("cmd.js.name"), "<script...>", "Run arbitrary Javascript.", Matrix::jsCommand);
-
-        handler.register(ConfigTranslate.get("cmd.grief.name"), "<id> <причина>", ConfigTranslate.get("cmd.grief.description").replace("{0}", ConfigTranslate.get("cmd.grief.name")), this::griefCommand);
     }
 
     public Bot getBot() {

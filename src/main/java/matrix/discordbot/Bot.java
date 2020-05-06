@@ -117,11 +117,12 @@ public class Bot {
 
         @Override
         public void run() {
-            while (Vars.net.server())
+            do {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(5000);
                 } catch (Exception ignored) {
                 }
+            } while (Vars.net.server());
             if (api.getRoleById(Config.get("stuffRoleID")).isPresent()) {
                 Optional<TextChannel> tc = getTextChannelFromID(Config.get("stuffChannelID"));
                 if (!tc.isPresent())
