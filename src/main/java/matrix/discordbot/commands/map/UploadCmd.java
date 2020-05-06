@@ -21,7 +21,7 @@ import java.util.zip.InflaterInputStream;
 public class UploadCmd {
     public static void main(MessageCreateEvent event) {
         TextChannel channel = event.getMessage().getChannel();
-        Optional<Role> optRole = Bot.getRoleFromID(Config.get("stuffRoleID"));
+        Optional<Role> optRole = Bot.getRoleFromID(Config.get("activePlayerRoleID"));
         if (event.isPrivateMessage() || channel == null || !event.getMessageAuthor().asUser().isPresent() || !event.getServer().isPresent() || !optRole.isPresent())
             return;
 

@@ -3,19 +3,40 @@ package matrix.discordbot.commands.map;
 import arc.Core;
 import arc.Events;
 import arc.files.Fi;
+import matrix.discordbot.Bot;
+import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;
 import mindustry.game.EventType;
 import mindustry.game.Team;
 import mindustry.maps.Map;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.permission.Role;
 import org.javacord.api.event.message.MessageCreateEvent;
 
+import java.util.Optional;
+
 public class ChangeCmd {
+    private static long lastMapChange = 0L;
+
     public static void main(MessageCreateEvent event) {
         TextChannel channel = event.getMessage().getChannel();
-        if (channel == null)
+        Optional<Role> optRole = Bot.getRoleFromID(Config.get("activePlayerRoleID"));
+        if (event.isPrivateMessage() || channel == null || !event.getMessageAuthor().asUser().isPresent() || !event.getServer().isPresent() || !optRole.isPresent())
             return;
+
+        if (!event.getMessageAuthor().asUser().get().getRoles(event.getServer().get())
+                .contains(optRole.get())) {
+            channel.sendMessage(ConfigTranslate.get("noPerm"));
+            return;
+        }
+        long minMapChangeTime = Long.parseLong(Config.get("minMapChangeTime"));
+
+        if (System.currentTimeMillis() / 1000L - lastMapChange < minMapChangeTime) {
+            event.getChannel().sendMessage(ConfigTranslate.get("cooldown").replace("{0}", String.valueOf(minMapChangeTime)));
+            return;
+        }
+
         String[] splitted = event.getMessage().getContent().split(" ", 2);
         String message;
         if (splitted.length == 1) {
@@ -57,6 +78,7 @@ public class ChangeCmd {
                 }
             }
         }
+        lastMapChange = System.currentTimeMillis() / 1000L;
         channel.sendMessage(message);
     }
 }
