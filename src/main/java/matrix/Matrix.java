@@ -87,20 +87,11 @@ public class Matrix extends Plugin {
             }
 
         });
-
     }
 
     @Override
     public void registerServerCommands(CommandHandler handler) {
         handler.register("ping", "Return \"Pong!\"", arg -> Log.info("Pong!"));
-
-        handler.register("nogui", "Auto start for hosting", arg -> {
-            if (Vars.state.is(GameState.State.playing)) {
-                Log.err("Already hosting. Type 'stop' to stop hosting first.");
-                return;
-            }
-            Log.info(SystemInfo.cpuProcess());
-        });
 
         handler.register("memory", "Return \"Pong!\"", arg -> {
             Log.info("SYSTEM CPU LOAD: " + SystemInfo.cpu() + "%");

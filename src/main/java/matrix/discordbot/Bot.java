@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class Bot {
-    DiscordApi api;
+    private DiscordApi api;
+
     public Bot() {
         Config.get("token");
         if (!Config.has("token"))
@@ -81,6 +82,10 @@ public class Bot {
 
     public static boolean isReportEnabled() {
         return Config.has("stuffRoleID") && Config.has("stuffChannelID") && Bot.getRoleFromID(Config.get("stuffRoleID")).isPresent() && Bot.getTextChannelFromID(Config.get("stuffChannelID")).isPresent();
+    }
+
+    public static String getMentionTag() {
+        return Matrix.INSTANCE.getBot().api.getYourself().getMentionTag();
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
