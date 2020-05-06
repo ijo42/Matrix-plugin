@@ -10,10 +10,12 @@ import matrix.discordbot.communication.SendToDiscord;
 import matrix.utils.*;
 import mindustry.Vars;
 import mindustry.core.GameState;
+import mindustry.core.NetServer;
 import mindustry.entities.type.Player;
 import mindustry.game.EventType;
 import mindustry.game.Team;
 import mindustry.gen.Call;
+import mindustry.net.Packets;
 import mindustry.plugin.Plugin;
 
 import java.util.HashMap;
@@ -119,6 +121,63 @@ public class Matrix extends Plugin {
         } else player.sendMessage("[gray][[[#F7E018]JS[gray]]: [coral]" + ConfigTranslate.get("cmd.js.isNotAdmin"));
     }
 
+    private void griefCommand(String[] args, Player player) {
+        if (!Bot.isReportEnabled()) {
+            player.sendMessage(ConfigTranslate.get("cmd.grief.disabled"));
+            return;
+        }
+
+        for (Long key : cooldowns.keySet()) {
+            if (key + CDT < System.currentTimeMillis() / 1000L) cooldowns.remove(key);
+            else if (player.uuid.equals(cooldowns.get(key))) {
+                player.sendMessage(ConfigTranslate.get("cmd.grief.cooldown"));
+                return;
+            }
+        }
+        if (args.length == 0) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(ConfigTranslate.get("cmd.grief.available"));
+            for (Player p : Vars.playerGroup.all()) {
+                if (p.isAdmin || p.con == null) continue;
+                builder.append("[lightgray] ").append(p.name).append("[accent] (#").append(p.id).append(")\n");
+            }
+            player.sendMessage(builder.toString());
+        } else {
+            Player found = null;
+            if (args[ 0 ].length() > 1 && args[ 0 ].startsWith("#") && Strings.canParseInt(args[ 0 ].substring(1))) {
+                int id = Strings.parseInt(args[ 0 ].substring(1));
+                for (Player p : Vars.playerGroup.all())
+                    if (p.id == id) {
+                        found = p;
+                        break;
+                    }
+            } else for (Player p : Vars.playerGroup.all())
+                if (p.name.equalsIgnoreCase(args[ 0 ])) {
+                    found = p;
+                    break;
+                }
+            if (found != null) {
+                bot.report(found.name, player.name, (args.length == 2 ? args[ 1 ] : ""));
+                Call.sendMessage(found.name + ConfigTranslate.get("cmd.grief.successfulSend"));
+                cooldowns.put(System.currentTimeMillis() / 1000L, player.uuid);
+            } else player.sendMessage(ConfigTranslate.get("cmd.grief.notFound").replace("{0}", args[ 0 ]));
+        }
+    }
+
+    private static void sendNWaves(String[] arg, Player player) {
+        if (player.isAdmin) {
+            if (Integer.parseInt(arg[ 0 ]) > 0 && Integer.parseInt(arg[ 0 ]) < 100) {
+                player.sendMessage("[gray][[[#F7E018]Starting..[gray]]");
+                for (int i = 0; i < Integer.parseInt(arg[ 0 ]); i++) {
+                    NetServer.onAdminRequest(player, player, Packets.AdminAction.wave);
+                }
+            } else
+                player.sendMessage("[gray][[[#F7E018]CMD[gray]]: [coral]" + ConfigTranslate.get("cmd.sendNWaves.limit"));
+
+        } else
+            player.sendMessage("[gray][[[#F7E018]CMD[gray]]: [coral]" + ConfigTranslate.get("cmd.sendNWaves.isNotAdmin"));
+    }
+
     private static void memoryCommand(String[] args, Player player) {
         if (player.isAdmin) {
             player.sendMessage(ConfigTranslate.get("cmd.memory.msg")
@@ -184,53 +243,11 @@ public class Matrix extends Plugin {
         handler.register(ConfigTranslate.get("cmd.infiniteResources.name"), "<on/off>", ConfigTranslate.get("cmd.infiniteResources.description"), Matrix::infinityResourceCommand);
         handler.register(ConfigTranslate.get("cmd.broadcast.name"), "<info...>", ConfigTranslate.get("cmd.broadcast.description"), Matrix::broadcastCommand);
         handler.register(ConfigTranslate.get("cmd.memory.name"), "", ConfigTranslate.get("cmd.memory.description"), Matrix::memoryCommand);
+        handler.register(ConfigTranslate.get("cmd.sendNWaves.name"), "<count>", "Run as much as you want waves.", Matrix::sendNWaves);
         handler.register(ConfigTranslate.get("cmd.grief.name"), ConfigTranslate.get("cmd.grief.params"), ConfigTranslate.get("cmd.grief.description").replace("{0}", ConfigTranslate.get("cmd.grief.name")), this::griefCommand);
         handler.register(ConfigTranslate.get("cmd.js.name"), "<script...>", "Run arbitrary Javascript.", Matrix::jsCommand);
 
         handler.register(ConfigTranslate.get("cmd.grief.name"), "<id> <причина>", ConfigTranslate.get("cmd.grief.description").replace("{0}", ConfigTranslate.get("cmd.grief.name")), this::griefCommand);
-    }
-
-    private void griefCommand(String[] args, Player player) {
-        if (!Bot.isReportEnabled()) {
-            player.sendMessage(ConfigTranslate.get("cmd.grief.disabled"));
-            return;
-        }
-
-        for (Long key : cooldowns.keySet()) {
-            if (key + CDT < System.currentTimeMillis() / 1000L) cooldowns.remove(key);
-            else if (player.uuid.equals(cooldowns.get(key))) {
-                player.sendMessage(ConfigTranslate.get("cmd.grief.cooldown"));
-                return;
-            }
-        }
-        if (args.length == 0) {
-            StringBuilder builder = new StringBuilder();
-            builder.append(ConfigTranslate.get("cmd.grief.available"));
-            for (Player p : Vars.playerGroup.all()) {
-                if (p.isAdmin || p.con == null) continue;
-                builder.append("[lightgray] ").append(p.name).append("[accent] (#").append(p.id).append(")\n");
-            }
-            player.sendMessage(builder.toString());
-        } else {
-            Player found = null;
-            if (args[ 0 ].length() > 1 && args[ 0 ].startsWith("#") && Strings.canParseInt(args[ 0 ].substring(1))) {
-                int id = Strings.parseInt(args[ 0 ].substring(1));
-                for (Player p : Vars.playerGroup.all())
-                    if (p.id == id) {
-                        found = p;
-                        break;
-                    }
-            } else for (Player p : Vars.playerGroup.all())
-                if (p.name.equalsIgnoreCase(args[ 0 ])) {
-                    found = p;
-                    break;
-                }
-            if (found != null) {
-                bot.report(found.name, player.name, (args.length == 2 ? args[ 1 ] : ""));
-                Call.sendMessage(found.name + ConfigTranslate.get("cmd.grief.successfulSend"));
-                cooldowns.put(System.currentTimeMillis() / 1000L, player.uuid);
-            } else player.sendMessage(ConfigTranslate.get("cmd.grief.notFound").replace("{0}", args[ 0 ]));
-        }
     }
 
     public Bot getBot() {
