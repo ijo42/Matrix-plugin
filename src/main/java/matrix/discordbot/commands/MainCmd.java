@@ -33,6 +33,8 @@ public class MainCmd implements MessageCreateListener {
             UploadCmd.main(event);
         } else if (msg.getContent().startsWith(Config.get("prefix") + ConfigTranslate.get("cmd.deleteMap.name"))) {
             DeleteCmd.main(event);
+        } else if (msg.getContent().startsWith(Config.get("prefix") + ConfigTranslate.get("cmd.banCmd.name"))) {
+            BanCmd.main(event);
         }
     }
 }

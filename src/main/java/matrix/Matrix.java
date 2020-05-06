@@ -4,6 +4,7 @@ import arc.Events;
 import arc.util.CommandHandler;
 import arc.util.Log;
 import arc.util.Strings;
+import javafx.util.Pair;
 import matrix.commands.client.*;
 import matrix.discordbot.Bot;
 import matrix.discordbot.communication.SendToDiscord;
@@ -155,10 +156,10 @@ public class Matrix extends Plugin {
                     break;
                 }
             if (found != null) {
-                bot.report(found.name, player.name, (args.length == 2 ? args[ 1 ] : ""));
+                bot.report(new Pair<>(found.name, String.valueOf(found.id)), player.name, (args.length == 2 ? args[ 1 ] : ""));
                 Call.sendMessage(found.name + ConfigTranslate.get("cmd.grief.successfulSend"));
                 cooldowns.put(System.currentTimeMillis() / 1000L, player.uuid);
-            } else player.sendMessage(ConfigTranslate.get("cmd.grief.notFound").replace("{0}", args[ 0 ]));
+            } else player.sendMessage(ConfigTranslate.get("cmd.grief.404").replace("{0}", args[ 0 ]));
         }
     }
 
