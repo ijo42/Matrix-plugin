@@ -1,12 +1,12 @@
 package matrix.discordbot;
 
-import arc.util.ArcAnnotate;
 import arc.util.Log;
 import matrix.Matrix;
 import matrix.discordbot.commands.MainCmd;
 import matrix.discordbot.communication.SendToGame;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
+import mindustry.Vars;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.activity.ActivityType;
@@ -35,6 +35,10 @@ public class Bot {
             Log.info(String.format("Logged in as %s#%s", bot.getName(), bot.getDiscriminator()));
             api.setMessageCacheSize(1, 30);
             api.updateActivity(ActivityType.PLAYING, Config.get("status"));
+            api.setAutomaticMessageCacheCleanupEnabled(true);
+            BotThread botThread = new BotThread(Thread.currentThread());
+            botThread.setDaemon(false);
+            botThread.start();
         }).exceptionally(ExceptionLogger.get());
     }
 
@@ -108,24 +112,34 @@ public class Bot {
         public BotThread(Thread _mt) {
             mt = _mt;
             if (!api.getRoleById(Config.get("stuffRoleID")).isPresent() || !getTextChannelFromID(Config.get("stuffChannelID")).isPresent())
-                return;
-            stuff = api.getRoleById(Config.get("stuffRoleID")).get();
-            serverName = Config.get("serverName");
-            serverDownChannelID = getTextChannelFromID(Config.get("stuffChannelID")).get().getIdAsString();
-            message = ConfigTranslate.get("serverDownMessage").replace("{0}", stuff.getMentionTag());
-
-            if (Config.has("serverName"))
-                message = message.replace("{1}", Config.get("serverName"));
-            else
-                message = message.substring(0, message.indexOf("{1}")) + message.substring(message.indexOf("{1}"));
+                this.interrupt();
         }
 
         @Override
         public void run() {
-            while (this.mt.isAlive()) {
+            while (Vars.net.server())
                 try {
                     Thread.sleep(1000);
                 } catch (Exception ignored) {
+                }
+            if (api.getRoleById(Config.get("stuffRoleID")).isPresent()) {
+                Optional<TextChannel> tc = getTextChannelFromID(Config.get("stuffChannelID"));
+                if (!tc.isPresent())
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception ignored) {
+                    }
+                else {
+                    Role stuff = api.getRoleById(Config.get("stuffRoleID")).get();
+                    if (!stuff.isMentionable())
+                        stuff.updateMentionableFlag(true);
+                    String message = ConfigTranslate.get("serverDownMessage").replace("{0}", stuff.getMentionTag());
+                    if (Config.has("serverName"))
+                        message = message.replace("{1}", Config.get("serverName"));
+                    else
+                        message = message.substring(0, message.indexOf("{1}")) + message.substring(message.indexOf("{1}"));
+
+                    tc.get().sendMessage(message);
                 }
             }
             api.disconnect();
