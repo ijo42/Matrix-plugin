@@ -85,7 +85,7 @@ public class Bot {
     }
 
     public static String getMentionTag() {
-        return Matrix.INSTANCE.getBot().api.getYourself().getMentionTag();
+        return Matrix.INSTANCE.getBot().api.getYourself().getNicknameMentionTag();
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")

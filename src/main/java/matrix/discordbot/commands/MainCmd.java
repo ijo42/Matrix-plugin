@@ -35,12 +35,12 @@ public class MainCmd implements MessageCreateListener {
     }
 
     public static String genFullCommand(String name) {
-        return Config.get("prefix") + String.format(ConfigTranslate.get("cmd.%s.name"), name);
+        return Config.get("prefix") + ConfigTranslate.get("cmd." + name + ".name");
     }
 
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
-        if (event.isPrivateMessage() || event.getMessageAuthor().isBotUser()) return;
+        if (event.isPrivateMessage() || !event.getMessageAuthor().isRegularUser()) return;
         String msg = event.getMessage().getContent();
         if (msg.startsWith(genFullCommand(SetMsgChannel.name))) SetMsgChannel.main(event);
         else if (msg.startsWith(genFullCommand(ItemsCmd.name))) ItemsCmd.main(event);

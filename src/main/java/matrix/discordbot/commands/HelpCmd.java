@@ -14,11 +14,12 @@ public class HelpCmd extends MainCmd.Command {
         if (channel == null)
             return;
         MessageBuilder message = new MessageBuilder();
-        message.append(event.getMessageAuthor());
-        message.append(ConfigTranslate.get("cmd.help.header"));
+        if (event.getMessageAuthor().asUser().isPresent())
+            message.append(event.getMessageAuthor().asUser().get()).append(",").append("\n");
+        message.append(ConfigTranslate.get("cmd.help.header")).append("\n");
         for (String com : MainCmd.getCommands())
-            message.append(ConfigTranslate.get("cmd.help.entry").replace("{0}", com));
-        message.append(ConfigTranslate.get("cmd.help.footer").replace("{0}", Config.get("prefix")));
+            message.append(ConfigTranslate.get("cmd.help.entry").replace("{0}", com)).append("\n");
+        message.append(ConfigTranslate.get("cmd.help.footer").replace("{0}", Config.get("prefix"))).append("\n");
         message.send(channel);
     }
 }
