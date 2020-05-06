@@ -11,7 +11,8 @@ import org.javacord.api.event.message.MessageCreateEvent;
 import java.util.Optional;
 
 
-public class SetMsgChannel {
+public class SetMsgChannel extends MainCmd.Command {
+    public static String name = "setMsgChannel";
 
     public static void main(MessageCreateEvent event) {
         TextChannel channel = event.getMessage().getChannel();

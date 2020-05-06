@@ -13,7 +13,8 @@ import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.awt.*;
 
-public class ItemsCmd {
+public class ItemsCmd extends MainCmd.Command {
+    public static String name = "items";
 
     public static void main(MessageCreateEvent event) {
         TextChannel channel = event.getMessage().getChannel();

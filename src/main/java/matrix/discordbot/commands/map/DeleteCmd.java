@@ -1,6 +1,7 @@
 package matrix.discordbot.commands.map;
 
 import matrix.discordbot.Bot;
+import matrix.discordbot.commands.MainCmd;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;
@@ -11,11 +12,13 @@ import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.util.Optional;
 
-public class DeleteCmd {
+public class DeleteCmd extends MainCmd.Command {
+    public static String name = "deleteMap";
+
     public static void main(MessageCreateEvent event) {
         TextChannel channel = event.getMessage().getChannel();
         Optional<Role> optRole = Bot.getRoleFromID(Config.get("stuffRoleID"));
-        if (event.isPrivateMessage() || channel == null || !event.getMessageAuthor().asUser().isPresent() || !event.getServer().isPresent() || !optRole.isPresent())
+        if (channel == null || !event.getMessageAuthor().asUser().isPresent() || !event.getServer().isPresent() || !optRole.isPresent())
             return;
         String message;
 

@@ -1,5 +1,6 @@
 package matrix.discordbot.commands.map;
 
+import matrix.discordbot.commands.MainCmd;
 import matrix.utils.ChatGuard;
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;
@@ -8,7 +9,9 @@ import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
 
-public class MapsCmd {
+public class MapsCmd extends MainCmd.Command {
+    public static String name = "maps";
+
     public static void main(MessageCreateEvent event) {
 
         TextChannel channel = event.getMessage().getChannel();

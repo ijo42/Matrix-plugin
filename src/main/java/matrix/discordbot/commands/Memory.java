@@ -9,11 +9,13 @@ import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.awt.*;
 
-public class Memory {
+public class Memory extends MainCmd.Command {
+    public static String name = "memory";
+
     public static void main(MessageCreateEvent event) {
         TextChannel channel = event.getMessage().getChannel();
         if (channel == null)
-            throw new NullPointerException();
+            return;
         EmbedBuilder embedCreateSpec = new EmbedBuilder();
         embedCreateSpec.setTitle(ConfigTranslate.get("cmd.memory.title"));
 

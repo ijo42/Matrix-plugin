@@ -3,6 +3,7 @@ package matrix.discordbot.commands.map;
 import arc.Core;
 import arc.files.Fi;
 import matrix.discordbot.Bot;
+import matrix.discordbot.commands.MainCmd;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;
@@ -18,11 +19,13 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.zip.InflaterInputStream;
 
-public class UploadCmd {
+public class UploadCmd extends MainCmd.Command {
+    public static String name = "uploadMap";
+
     public static void main(MessageCreateEvent event) {
         TextChannel channel = event.getMessage().getChannel();
         Optional<Role> optRole = Bot.getRoleFromID(Config.get("activePlayerRoleID"));
-        if (event.isPrivateMessage() || channel == null || !event.getMessageAuthor().asUser().isPresent() || !event.getServer().isPresent() || !optRole.isPresent())
+        if (channel == null || !event.getMessageAuthor().asUser().isPresent() || !event.getServer().isPresent() || !optRole.isPresent())
             return;
 
         if (!event.getMessageAuthor().asUser().get().getRoles(event.getServer().get())

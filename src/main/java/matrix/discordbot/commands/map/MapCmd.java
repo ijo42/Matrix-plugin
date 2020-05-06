@@ -1,5 +1,6 @@
 package matrix.discordbot.commands.map;
 
+import matrix.discordbot.commands.MainCmd;
 import matrix.utils.ChatGuard;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
@@ -11,16 +12,17 @@ import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.awt.*;
 
-public class MapCmd {
+public class MapCmd extends MainCmd.Command {
+    public static String name = "map";
+
     public static void main(MessageCreateEvent event) {
-        if (!Vars.state.is(GameState.State.playing)) {
-            return;
-        }
+        if (!Vars.state.is(GameState.State.playing)) return;
+
         TextChannel channel = event.getMessage().getChannel();
         if (channel == null)
             return;
         EmbedBuilder embedCreateSpec = new EmbedBuilder();
-            embedCreateSpec.setTitle(ConfigTranslate.get("cmd.map.title"));
+        embedCreateSpec.setTitle(ConfigTranslate.get("cmd.map.title"));
 
         embedCreateSpec.setColor(
                 new Color(
