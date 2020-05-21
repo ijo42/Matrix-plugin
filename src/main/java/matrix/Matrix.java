@@ -17,9 +17,12 @@ public class Matrix extends Plugin {
     private final Bot bot;
 
     public Matrix() {
-        Config.main();
+        Config.init();
         INSTANCE = this;
         bot = new Bot();
+    }
+
+    public void initEvents() {
         PlayersEvents events = new PlayersEvents();
         events.register();
     }

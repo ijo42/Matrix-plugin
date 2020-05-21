@@ -44,6 +44,7 @@ public class Bot {
             api.setAutomaticMessageCacheCleanupEnabled(true);
             api.addLostConnectionListener(event -> online = false);
             api.addResumeListener(event -> online = true);
+            api.addMessageCreateListener(event -> online = true);
             api.addReconnectListener(event -> online = true);
             BotThread botThread = new BotThread(Thread.currentThread());
             botThread.setDaemon(false);

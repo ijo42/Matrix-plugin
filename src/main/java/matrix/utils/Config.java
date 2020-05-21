@@ -13,7 +13,7 @@ public class Config {
     private static final String MAIN_DIR = "config/mods/Matrix";
     private static final String BUNDLES_DIR = "config/mods/Matrix/bundles";
 
-    public static void main() {
+    public static void init() {
         // Создаём папку если не существует
         final File dir1 = new File(MAIN_DIR);
         if (!dir1.exists()) {
