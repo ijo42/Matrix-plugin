@@ -114,11 +114,11 @@ public class Bot {
     public void report(Pair<String, String> suspect, String reporter, String reason) {
         Role stuff = Bot.getRoleFromID(Config.get("stuffRoleID")).get();
         TextChannel stuffChat = Bot.getTextChannelFromID(Config.get("stuffChannelID")).get();
+        new MessageBuilder().setContent(stuff.getMentionTag()).send(stuffChat);
         if (!reason.isEmpty()) {
             new MessageBuilder()
                     .setEmbed(new EmbedBuilder()
                             .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
-                            .setDescription(stuff.getMentionTag())
                             .addField(ConfigTranslate.get("cmd.grief.suspectName"), ChatGuard.removeColors.apply(suspect.getKey()) + " ||#" + suspect.getValue() + "||")
                             .addField(ConfigTranslate.get("cmd.grief.suspectReason"), reason)
                             .setColor(Color.ORANGE)
@@ -128,7 +128,6 @@ public class Bot {
             new MessageBuilder()
                     .setEmbed(new EmbedBuilder()
                             .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
-                            .setDescription(stuff.getMentionTag())
                             .addField(Config.get("cmd.grief.suspectName"), ChatGuard.removeColors.apply(suspect.getKey()) + " ||#" + suspect.getValue() + "||")
                             .setColor(Color.ORANGE)
                             .setFooter(ConfigTranslate.get("cmd.grief.reporter") + ChatGuard.removeColors.apply(reporter)))
