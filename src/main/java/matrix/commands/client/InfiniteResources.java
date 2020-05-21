@@ -8,10 +8,10 @@ public class InfiniteResources {
     public static void set(String[] args, Player player) {
         if (args[0].equals("on")) {
             Vars.state.rules.infiniteResources = true;
-            player.sendMessage(ConfigTranslate.get("cmd.infiniteResources.settedOn"));
+            player.sendMessage(ConfigTranslate.get("cmd.infiniteResources.setOn"));
         } else {
             Vars.state.rules.infiniteResources = false;
-            player.sendMessage(ConfigTranslate.get("cmd.infiniteResources.settedOff"));
+            player.sendMessage(ConfigTranslate.get("cmd.infiniteResources.setOff"));
         }
         for(int id = 0; id < Vars.playerGroup.all().size; id++){
             Player pl = Vars.playerGroup.all().get(id);

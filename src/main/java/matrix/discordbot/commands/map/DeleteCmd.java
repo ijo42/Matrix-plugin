@@ -28,7 +28,7 @@ public class DeleteCmd extends MainCmd.Command {
         } else {
             String[] splitted = event.getMessageContent().split(" ", 2);
             if (splitted.length == 1) {
-                message = Config.get("cmd.deleteMap.usage");
+                message = ConfigTranslate.get("cmd.deleteMap.usage");
             } else {
                 Map found = null;
                 try {
@@ -47,7 +47,7 @@ public class DeleteCmd extends MainCmd.Command {
                 } else {
                     Vars.maps.removeMap(found);
                     Vars.maps.reload();
-                    message = Config.get("cmd.deleteMap.successful");
+                    message = ConfigTranslate.get("cmd.deleteMap.successful");
                 }
             }
         }
