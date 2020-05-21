@@ -1,6 +1,7 @@
 package matrix.discordbot.communication;
 
 import matrix.Matrix;
+import matrix.discordbot.Bot;
 import matrix.utils.ChatGuard;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
@@ -12,7 +13,7 @@ import java.time.Instant;
 public class SendToDiscord {
 
     public static void sendChatMessage(String nick, String msg, boolean isAdmin) {
-        if (msg.isEmpty()) return;
+        if (msg.isEmpty() || !Bot.isOnline()) return;
         msg = ChatGuard.removeMentions.apply(msg);
         EmbedBuilder embed = new EmbedBuilder()
                 .setColor(isAdmin ? Color.RED : Color.CYAN)
@@ -22,14 +23,14 @@ public class SendToDiscord {
     }
 
     public static void log(String nick, String msg) {
-        if (msg.isEmpty()) return;
+        if (msg.isEmpty() || !Bot.isOnline()) return;
         String message = ConfigTranslate.get("loggerName") + "\n" +
                 ConfigTranslate.get("usageCmd").replace("{0}", ChatGuard.removeColors.apply(nick))
                 + msg;
         Matrix.INSTANCE.getBot().sendMessage(Config.get("stuffChannelID"), message);
     }
     public static void sendBotMessage(String message) {
-        if(message.isEmpty()) return;
+        if (message.isEmpty() || !Bot.isOnline()) return;
         Matrix.INSTANCE.getBot().sendMessage(Config.get("liveChannelId"), message);
     }
 }

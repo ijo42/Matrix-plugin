@@ -25,7 +25,7 @@ import java.util.Optional;
 
 public class Bot {
     private DiscordApi api;
-
+    private static boolean online = false;
     public Bot() {
         Config.get("token");
         if (!Config.has("token"))
@@ -39,10 +39,16 @@ public class Bot {
             api.setMessageCacheSize(1, 30);
             api.updateActivity(ActivityType.PLAYING, Config.get("status"));
             api.setAutomaticMessageCacheCleanupEnabled(true);
+            api.addLostConnectionListener(event -> online = false);
             BotThread botThread = new BotThread(Thread.currentThread());
             botThread.setDaemon(false);
             botThread.start();
+            online = true;
         }).exceptionally(ExceptionLogger.get());
+    }
+
+    public static boolean isOnline() {
+        return online;
     }
 
     public static Role getHighestRole(List<Role> roles) {
@@ -59,10 +65,18 @@ public class Bot {
     }
 
     public static Optional<TextChannel> getTextChannelFromID(String id) {
-        return Matrix.INSTANCE.getBot().api.getTextChannelById(id);
+        if (isOnline())
+            return Matrix.INSTANCE.getBot().api.getTextChannelById(id);
+        else return Optional.empty();
+    }
+
+    public static boolean isReportEnabled() {
+        return isOnline() && Config.has("stuffRoleID") && Config.has("stuffChannelID") && Bot.getRoleFromID(Config.get("stuffRoleID")).isPresent() && Bot.getTextChannelFromID(Config.get("stuffChannelID")).isPresent();
     }
 
     public void sendMessage(String channelID, String message) {
+        if (!isOnline())
+            return;
         Optional<TextChannel> channel = api.getTextChannelById(channelID);
         if (!channel.isPresent()) {
             new RuntimeException("Channel not present Bot::sendMessage").printStackTrace();
@@ -72,16 +86,14 @@ public class Bot {
     }
 
     public void sendEmbed(String channelID, EmbedBuilder spec) {
+        if (!isOnline())
+            return;
         Optional<TextChannel> channel = api.getTextChannelById(channelID);
         if (!channel.isPresent()) {
             new RuntimeException("Channel not present Bot::sendMessage").printStackTrace();
             return;
         }
         new MessageBuilder().setEmbed(spec).send(channel.get());
-    }
-
-    public static boolean isReportEnabled() {
-        return Config.has("stuffRoleID") && Config.has("stuffChannelID") && Bot.getRoleFromID(Config.get("stuffRoleID")).isPresent() && Bot.getTextChannelFromID(Config.get("stuffChannelID")).isPresent();
     }
 
     public static String getMentionTag() {
@@ -115,13 +127,14 @@ public class Bot {
     }
 
     public class BotThread extends Thread {
-        private Thread mt;
+        private final Thread mt;
         public BotThread(Thread _mt) {
             mt = _mt;
             if (!api.getRoleById(Config.get("stuffRoleID")).isPresent() || !getTextChannelFromID(Config.get("stuffChannelID")).isPresent())
                 this.interrupt();
         }
 
+        @SuppressWarnings("BusyWait")
         @Override
         public void run() {
             do {
