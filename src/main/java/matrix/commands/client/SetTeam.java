@@ -33,34 +33,25 @@ public class SetTeam {
                 }
             }
         }
-
-        if(args[0].equals("blue") && BLUE_TEAM){
+        if (args[ 0 ].equals("blue") && BLUE_TEAM) {
             player.setTeam(Team.blue);
-            notOk=true;
-        }
-
-        if(args[0].equals("green") && GREEN_TEAM){
+            notOk = true;
+        } else if (args[ 0 ].equals("green") && GREEN_TEAM) {
             player.setTeam(Team.green);
-            notOk=true;
+            notOk = true;
 
-        }
-
-        if(args[0].equals("red") && RED_TEAM){
+        } else if (args[ 0 ].equals("red") && RED_TEAM) {
             player.setTeam(Team.crux);
-            notOk=true;
-        }
-
-        if(args[0].equals("purple") && PURPLE_TEAM){
+            notOk = true;
+        } else if (args[ 0 ].equals("purple") && PURPLE_TEAM) {
             player.setTeam(Team.purple);
-            notOk=true;
-        }
-
-        if(args[0].equals("yellow") && YELLOW_TEAM){
+            notOk = true;
+        } else if (args[ 0 ].equals("yellow") && YELLOW_TEAM) {
             player.setTeam(Team.sharded);
-            notOk=true;
+            notOk = true;
         }
 
-        if(notOk) { player.sendMessage(ConfigTranslate.get("cmd.setTeam.ok"));
-        } else player.sendMessage(ConfigTranslate.get("cmd.setTeam.notFound"));
+        if (notOk) player.sendMessage(ConfigTranslate.get("cmd.setTeam.ok"));
+        else player.sendMessage(ConfigTranslate.get("cmd.setTeam.notFound"));
     }
 }

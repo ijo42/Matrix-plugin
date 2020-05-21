@@ -5,7 +5,10 @@ import arc.util.CommandHandler;
 import arc.util.Log;
 import arc.util.Strings;
 import javafx.util.Pair;
-import matrix.commands.client.*;
+import matrix.commands.client.Broadcast;
+import matrix.commands.client.InfiniteResources;
+import matrix.commands.client.SetTeam;
+import matrix.commands.client.Teleport;
 import matrix.discordbot.Bot;
 import matrix.discordbot.communication.SendToDiscord;
 import matrix.utils.*;
@@ -24,7 +27,7 @@ public class Matrix extends Plugin {
     public static Matrix INSTANCE;
     private final Bot bot;
     private final Long CDT = 300L;
-    private HashMap<Long, String> cooldowns = new HashMap<>();
+    private final HashMap<Long, String> cooldowns = new HashMap<>();
 
     public Matrix() {
         Config.main();
@@ -159,14 +162,10 @@ public class Matrix extends Plugin {
             if (Integer.parseInt(arg[ 0 ]) > 0 && Integer.parseInt(arg[ 0 ]) < 100) {
                 player.sendMessage("[gray][[[#F7E018]Starting..[gray]]");
                 for (int i = 0; i < Integer.parseInt(arg[ 0 ]); i++) {
-                    Vars.spawner.spawnEnemies();
-                    ++Vars.state.wave;
+                    Vars.logic.runWave();
                 }
-                Vars.state.wavetime = Vars.world.isZone() && Vars.world.getZone().isLaunchWave(Vars.state.wave) ? Vars.state.rules.waveSpacing * Vars.state.rules.launchWaveMultiplier : Vars.state.rules.waveSpacing;
-                Events.fire(new EventType.WaveEvent());
             } else
                 player.sendMessage("[gray][[[#F7E018]CMD[gray]]: [coral]" + ConfigTranslate.get("cmd.sendWaves.limit"));
-
         } else
             player.sendMessage("[gray][[[#F7E018]CMD[gray]]: [coral]" + ConfigTranslate.get("cmd.sendWaves.noPerms"));
     }
@@ -194,11 +193,11 @@ public class Matrix extends Plugin {
     }
 
     private static void setBlockCommand(String[] args, Player player) {
-        if (player.isAdmin) SetBlock.main(player, args);
+        if (player.isAdmin) Map.setBlock(player, args);
     }
 
     private static void spawnOreCommand(String[] args, Player player) {
-        if (player.isAdmin) SpawnOre.main(player, args);
+        if (player.isAdmin) Map.spawnOre(player, args);
     }
 
     private static void teleportToPlayerCommand(String[] args, Player player) {

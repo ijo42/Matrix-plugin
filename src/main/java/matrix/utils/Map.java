@@ -25,13 +25,14 @@ public class Map {
 
         String[] args = Args[0].split(" ");
         Block block = Blocks.oreCopper;
-        int radius = 1;
+        int radius;
 
-        if(!args[0].matches("\\d+")) {
+        if (!args[ 0 ].matches("\\d+")) {
             player.sendMessage(ConfigTranslate.get("cmd.spawnOre.error"));
-        } else if(Long.parseLong(args[0]) >= 1000) {
-            radius = 1000;
-        } else radius = Integer.parseInt(args[0]);
+            return;
+        } else if (Long.parseLong(args[ 0 ]) >= 100) {
+            radius = 100;
+        } else radius = Integer.parseInt(args[ 0 ]);
 
         int x = Math.round(player.x/8);
         int y = Math.round(player.y/8);
@@ -61,7 +62,7 @@ public class Map {
             Player pl = Vars.playerGroup.all().get(id);
             Vars.netServer.sendWorldData(pl);
         }
-
+        player.sendMessage(ConfigTranslate.get("cmd.spawnOre.ok"));
     }
 
     public static void setBlock(Player player, String[] args) {
