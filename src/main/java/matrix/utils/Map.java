@@ -91,11 +91,12 @@ public class Map {
         int x = Math.round(player.x/8);
         int y = Math.round(player.y/8);
 
-        Block block = Vars.content.blocks().find(b -> b.name.equals(args[0]));
+        Block block = Vars.content.blocks().find(b -> b.name.equals(args[ 0 ]));
 
         if (block != null) {
             player.sendMessage(ConfigTranslate.get("cmd.setBlock.successful"));
             Vars.world.tile(x, y).setNet(block, player.getTeam(), 0);
+            Vars.playerGroup.all().list().forEach(Map::sync);
 
         } else player.sendMessage(ConfigTranslate.get("cmd.setBlock.failed"));
     }
