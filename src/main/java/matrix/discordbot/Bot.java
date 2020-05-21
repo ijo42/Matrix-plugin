@@ -35,6 +35,7 @@ public class Bot {
             throw new RuntimeException("MATRIX: Token Invalid.");
         new DiscordApiBuilder().setToken(Config.get("token")).login().thenAccept(api -> {
             this.api = api;
+            online = true;
             api.addMessageCreateListener(SendToGame::new);
             api.addMessageCreateListener(MainCmd::new);
             User bot = api.getYourself();
@@ -43,10 +44,11 @@ public class Bot {
             api.updateActivity(ActivityType.PLAYING, Config.get("status"));
             api.setAutomaticMessageCacheCleanupEnabled(true);
             api.addLostConnectionListener(event -> online = false);
+            api.addResumeListener(event -> online = true);
+            api.addReconnectListener(event -> online = true);
             BotThread botThread = new BotThread(Thread.currentThread());
             botThread.setDaemon(false);
             botThread.start();
-            online = true;
         }).exceptionally(ExceptionLogger.get());
     }
 

@@ -47,7 +47,7 @@ public class DeleteCmd extends MainCmd.Command {
                 } else {
                     Vars.maps.removeMap(found);
                     Vars.maps.reload();
-                    message = ConfigTranslate.get("cmd.deleteMap.successful");
+                    message = ConfigTranslate.get("cmd.deleteMap.successful").replace("{0}", found.name());
                 }
             }
         }
