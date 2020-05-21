@@ -16,7 +16,7 @@ public class MainCmd implements MessageCreateListener {
         onMessageCreate(messageCreateEvent);
     }
 
-    private static List<String> commands = new LinkedList<>();
+    private static final List<String> commands = new LinkedList<>();
 
     public static List<String> getCommands() {
         if (commands.isEmpty()) {

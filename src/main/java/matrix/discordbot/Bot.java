@@ -8,7 +8,6 @@ import matrix.discordbot.communication.SendToGame;
 import matrix.utils.ChatGuard;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
-import mindustry.Vars;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.activity.ActivityType;
@@ -139,15 +138,16 @@ public class Bot {
                 this.interrupt();
         }
 
-        @SuppressWarnings("BusyWait")
+        @SuppressWarnings({"BusyWait", "InfiniteLoopStatement"})
         @Override
         public void run() {
-            do {
-                try {
+            try {
+                do {
                     Thread.sleep(5000);
-                } catch (Exception ignored) {
-                }
-            } while (Vars.net.server());
+
+                } while (true);//Vars.net.server());
+            } catch (Exception ignored) {
+            }
             if (api.getRoleById(Config.get("stuffRoleID")).isPresent()) {
                 Optional<TextChannel> tc = getTextChannelFromID(Config.get("stuffChannelID"));
                 if (!tc.isPresent())

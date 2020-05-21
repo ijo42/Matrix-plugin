@@ -6,7 +6,7 @@ import java.lang.management.ManagementFactory;
 
 public class SystemInfo {
 
-    private static OperatingSystemMXBean osMBean
+    private static final OperatingSystemMXBean osMBean
             = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
     public static int cpu() {

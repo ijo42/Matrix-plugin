@@ -34,34 +34,50 @@ public class Map {
             radius = 100;
         } else radius = Integer.parseInt(args[ 0 ]);
 
-        int x = Math.round(player.x/8);
-        int y = Math.round(player.y/8);
-
-        if(args.length>=2) {
-            if (args[1].equals("lead")) block = Blocks.oreLead;
-            if (args[1].equals("coal")) block = Blocks.oreCoal;
-            if (args[1].equals("titanium")) block = Blocks.oreTitanium;
-            if (args[1].equals("thorium")) block = Blocks.oreThorium;
-            if (args[1].equals("scrap")) block = Blocks.oreScrap;
+        int x = Math.round(player.x / 8);
+        int y = Math.round(player.y / 8);
+        short id = 0;
+        if (args.length >= 2) {
+            try {
+                id = Short.parseShort(args[ 1 ]);
+            } catch (NumberFormatException e) {
+                switch (args[ 1 ]) {
+                    case "lead":
+                        id = Blocks.oreLead.id;
+                        break;
+                    case "coal":
+                        id = Blocks.oreCoal.id;
+                        break;
+                    case "titanium":
+                        id = Blocks.oreTitanium.id;
+                        break;
+                    case "thorium":
+                        id = Blocks.oreThorium.id;
+                        break;
+                    case "scrap":
+                        id = Blocks.oreScrap.id;
+                        break;
+                }
+            }
         }
-
-        for(int rx = -radius; rx <= radius; rx++){
-            for(int ry = -radius; ry <= radius; ry++){
-                if(Mathf.dst2(rx, ry) <= (radius - 0.5f) * (radius - 0.5f)){
+        if (id == 0) {
+            player.sendMessage(ConfigTranslate.get("cmd.spawnOre.error"));
+            return;
+        }
+        for (int rx = -radius; rx <= radius; rx++) {
+            for (int ry = -radius; ry <= radius; ry++) {
+                if (Mathf.dst2(rx, ry) <= (radius - 0.5f) * (radius - 0.5f)) {
                     int wx = x + rx, wy = y + ry;
 
                     if(wx < 0 || wy < 0 || wx >= Vars.world.width() || wy >= Vars.world.height()){
                             continue;
                     }
-                    Vars.world.tile(wx, wy).setOverlay(block);
+                    Vars.world.tile(wx, wy).setOverlayID(id);
                 }
             }
         }
+        Vars.playerGroup.all().list().forEach(Vars.netServer::sendWorldData);
 
-        for(int id = 0; id < Vars.playerGroup.all().size; id++){
-            Player pl = Vars.playerGroup.all().get(id);
-            Vars.netServer.sendWorldData(pl);
-        }
         player.sendMessage(ConfigTranslate.get("cmd.spawnOre.ok"));
     }
 
@@ -77,10 +93,8 @@ public class Map {
             Vars.world.tile(x, y).setBlock(block);
             Vars.world.tile(x, y).setTeam(player.getTeam());
 
-            for (int id = 0; id < Vars.playerGroup.all().size; id++) {
-                Player pl = Vars.playerGroup.all().get(id);
-                Vars.netServer.sendWorldData(pl);
-            }
+            Vars.playerGroup.all().list().forEach(Vars.netServer::sendWorldData);
+
         } else player.sendMessage(ConfigTranslate.get("cmd.setBlock.failed"));
     }
 
