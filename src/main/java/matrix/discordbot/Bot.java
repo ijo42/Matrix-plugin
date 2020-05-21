@@ -46,13 +46,18 @@ public class Bot {
             api.addResumeListener(event -> online = true);
             api.addMessageCreateListener(event -> online = true);
             api.addReconnectListener(event -> online = true);
-            BotThread botThread = new BotThread(Thread.currentThread());
-            botThread.setDaemon(false);
-            botThread.start();
+            //BotThread botThread = new BotThread(Thread.currentThread());
+            //botThread.setDaemon(false);
+            //botThread.start();
+            Matrix.INSTANCE.initEvents();
         }).exceptionally(ExceptionLogger.get());
     }
 
     public static boolean isOnline() {
+        if (!online) {
+            Log.err("offline");
+            new NullPointerException("offline").printStackTrace();
+        }
         return online;
     }
 
@@ -131,7 +136,7 @@ public class Bot {
         }
     }
 
-    public class BotThread extends Thread {
+   /* public class BotThread extends Thread {
         private final Thread mt;
         public BotThread(Thread _mt) {
             mt = _mt;
@@ -139,14 +144,14 @@ public class Bot {
                 this.interrupt();
         }
 
-        @SuppressWarnings({"BusyWait", "InfiniteLoopStatement"})
+        @SuppressWarnings({"BusyWait"})
         @Override
         public void run() {
             try {
                 do {
                     Thread.sleep(5000);
 
-                } while (true);//Vars.net.server());
+                } while (Vars.net.server() && !Vars.state.gameOver);
             } catch (Exception ignored) {
             }
             if (api.getRoleById(Config.get("stuffRoleID")).isPresent()) {
@@ -171,5 +176,5 @@ public class Bot {
             }
             api.disconnect();
         }
-    }
+    }*/
 }

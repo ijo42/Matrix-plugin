@@ -14,7 +14,7 @@ public class SendToDiscord {
 
     public static void sendChatMessage(String nick, String msg, boolean isAdmin) {
         if (msg.isEmpty() || !Bot.isOnline()) return;
-        msg = ChatGuard.removeMentions.apply(msg);
+        msg = ChatGuard.removeColorsAndMentions.apply(msg);
         EmbedBuilder embed = new EmbedBuilder()
                 .setColor(isAdmin ? Color.RED : Color.CYAN)
                 .setAuthor(ChatGuard.removeColors.apply(nick), null, (Config.has("messagerAvatarURL") ? Config.get("messagerAvatarURL") : null))

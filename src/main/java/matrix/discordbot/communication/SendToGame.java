@@ -1,6 +1,7 @@
 package matrix.discordbot.communication;
 
 import matrix.discordbot.Bot;
+import matrix.utils.ChatGuard;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import mindustry.gen.Call;
@@ -38,6 +39,7 @@ public class SendToGame implements MessageCreateListener {
         MessageAuthor author = event.getMessageAuthor();
         Message message = event.getMessage();
         String content = message.getContent().replace("\n", " ");
+        content = ChatGuard.removeCustomEmoji.apply(content);
         Optional<User> member = guild.get().getMemberById(author.getId());
         if (!member.isPresent())
             return;

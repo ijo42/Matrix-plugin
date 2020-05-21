@@ -5,17 +5,21 @@ import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.entities.type.Player;
 import mindustry.game.Team;
+import mindustry.gen.Call;
 import mindustry.world.Block;
 
 public class Map {
 
     public static int getCapacity(Team team) {
         int capacity = 0;
-            //TODO:fix zero output
-        for(int x = 0; x < Vars.state.teams.get(team).cores.size; x++){
-            if(Vars.state.teams.get(team).cores.get(x).block == Blocks.coreShard) capacity+=Blocks.coreShard.itemCapacity;
-            if(Vars.state.teams.get(team).cores.get(x).block == Blocks.coreFoundation) capacity+=Blocks.coreFoundation.itemCapacity;
-            if(Vars.state.teams.get(team).cores.get(x).block == Blocks.coreNucleus) capacity+=Blocks.coreNucleus.itemCapacity;
+        //TODO:fix zero output
+        for (int x = 0; x < Vars.state.teams.get(team).cores.size; x++) {
+            if (Vars.state.teams.get(team).cores.get(x).block == Blocks.coreShard)
+                capacity += Blocks.coreShard.itemCapacity;
+            if (Vars.state.teams.get(team).cores.get(x).block == Blocks.coreFoundation)
+                capacity += Blocks.coreFoundation.itemCapacity;
+            if (Vars.state.teams.get(team).cores.get(x).block == Blocks.coreNucleus)
+                capacity += Blocks.coreNucleus.itemCapacity;
         }
 
         return capacity;
@@ -23,8 +27,7 @@ public class Map {
 
     public static void spawnOre(Player player, String[] Args) {
 
-        String[] args = Args[0].split(" ");
-        Block block = Blocks.oreCopper;
+        String[] args = Args[ 0 ].split(" ");
         int radius;
 
         if (!args[ 0 ].matches("\\d+")) {
@@ -69,15 +72,18 @@ public class Map {
                 if (Mathf.dst2(rx, ry) <= (radius - 0.5f) * (radius - 0.5f)) {
                     int wx = x + rx, wy = y + ry;
 
-                    if(wx < 0 || wy < 0 || wx >= Vars.world.width() || wy >= Vars.world.height()){
-                            continue;
+                    if (wx < 0 || wy < 0 || wx >= Vars.world.width() || wy >= Vars.world.height()) {
+                        continue;
                     }
                     Vars.world.tile(wx, wy).setOverlayID(id);
+
+
                 }
             }
         }
-        Vars.playerGroup.all().list().forEach(Vars.netServer::sendWorldData);
 
+        Vars.playerGroup.all().list().forEach(Vars.netServer::sendWorldData);
+        Vars.playerGroup.all().list().forEach(n -> Call.onWorldDataBegin(n.con));
         player.sendMessage(ConfigTranslate.get("cmd.spawnOre.ok"));
     }
 
@@ -94,6 +100,7 @@ public class Map {
             Vars.world.tile(x, y).setTeam(player.getTeam());
 
             Vars.playerGroup.all().list().forEach(Vars.netServer::sendWorldData);
+            Vars.playerGroup.all().list().forEach(n -> Call.onWorldDataBegin(n.con));
 
         } else player.sendMessage(ConfigTranslate.get("cmd.setBlock.failed"));
     }

@@ -25,6 +25,17 @@ public class ChatGuard {
         return str;
     };
 
+    public static UnaryOperator<String> removeCustomEmoji = str -> {
+        str = str.replaceAll("<(:[^<]*)>", "");
+        return str;
+    };
+
+    public static UnaryOperator<String> removeColorsAndMentions = str -> {
+        str = removeColors.apply(str);
+        str = removeMentions.apply(str);
+        return str;
+    };
+
     public static boolean check(String content) {
         return Arrays.stream(get()).anyMatch(x -> x.equalsIgnoreCase(content));
     }
