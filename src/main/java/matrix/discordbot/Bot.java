@@ -27,9 +27,12 @@ public class Bot {
     private DiscordApi api;
     private static boolean online = false;
     public Bot() {
-        Config.get("token");
+        if (!Boolean.parseBoolean(Config.get("botIsEnabled"))) {
+            Log.warn("MATRIX: Bot is Disabled");
+            return;
+        }
         if (!Config.has("token"))
-            throw new RuntimeException("DiscordPlugin: Токен не валидный.");
+            throw new RuntimeException("MATRIX: Token Invalid.");
         new DiscordApiBuilder().setToken(Config.get("token")).login().thenAccept(api -> {
             this.api = api;
             api.addMessageCreateListener(SendToGame::new);
