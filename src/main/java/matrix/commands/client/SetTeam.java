@@ -20,15 +20,15 @@ public class SetTeam {
         for(int x = 0; x < Vars.world.width(); x++){
             for(int y = 0; y < Vars.world.height(); y++){
                 if(Vars.world.tile(x, y).block() == Blocks.coreShard || Vars.world.tile(x, y).block() == Blocks.coreFoundation || Vars.world.tile(x, y).block() == Blocks.coreNucleus){
-                    if(Vars.world.tile(x, y).getTeam() == Team.blue)
+                    if (Vars.world.tile(x, y).getTeam() == Team.blue)
                         BLUE_TEAM = true;
-                    if(Vars.world.tile(x, y).getTeam() == Team.green)
+                    else if (Vars.world.tile(x, y).getTeam() == Team.green)
                         GREEN_TEAM = true;
-                    if(Vars.world.tile(x, y).getTeam() == Team.crux)
+                    else if (Vars.world.tile(x, y).getTeam() == Team.crux)
                         RED_TEAM = true;
-                    if(Vars.world.tile(x, y).getTeam() == Team.purple)
+                    else if (Vars.world.tile(x, y).getTeam() == Team.purple)
                         PURPLE_TEAM = true;
-                    if(Vars.world.tile(x, y).getTeam() == Team.sharded)
+                    else if (Vars.world.tile(x, y).getTeam() == Team.sharded)
                         YELLOW_TEAM = true;
                 }
             }

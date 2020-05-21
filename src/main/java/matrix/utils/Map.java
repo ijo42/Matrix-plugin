@@ -1,12 +1,14 @@
 package matrix.utils;
 
 import arc.math.Mathf;
+import arc.util.Time;
 import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.entities.type.Player;
 import mindustry.game.Team;
 import mindustry.gen.Call;
 import mindustry.world.Block;
+import mindustry.world.blocks.Floor;
 
 public class Map {
 
@@ -63,7 +65,7 @@ public class Map {
                 }
             }
         }
-        if (id == 0) {
+        if (id == 0 || Vars.content.block(id) == null || !(Vars.content.block(id) instanceof Floor)) {
             player.sendMessage(ConfigTranslate.get("cmd.spawnOre.error"));
             return;
         }
@@ -76,15 +78,12 @@ public class Map {
                         continue;
                     }
                     Vars.world.tile(wx, wy).setOverlayID(id);
-
-
                 }
             }
         }
-
-        Vars.playerGroup.all().list().forEach(Vars.netServer::sendWorldData);
-        Vars.playerGroup.all().list().forEach(n -> Call.onWorldDataBegin(n.con));
         player.sendMessage(ConfigTranslate.get("cmd.spawnOre.ok"));
+
+        Vars.playerGroup.all().list().forEach(Map::sync);
     }
 
     public static void setBlock(Player player, String[] args) {
@@ -96,13 +95,24 @@ public class Map {
 
         if (block != null) {
             player.sendMessage(ConfigTranslate.get("cmd.setBlock.successful"));
-            Vars.world.tile(x, y).setBlock(block);
-            Vars.world.tile(x, y).setTeam(player.getTeam());
-
-            Vars.playerGroup.all().list().forEach(Vars.netServer::sendWorldData);
-            Vars.playerGroup.all().list().forEach(n -> Call.onWorldDataBegin(n.con));
+            Vars.world.tile(x, y).setNet(block, player.getTeam(), 0);
 
         } else player.sendMessage(ConfigTranslate.get("cmd.setBlock.failed"));
     }
 
+    static void sync(Player player) {
+        if (player.isLocal) {
+            player.sendMessage("[scarlet]Re-synchronizing as the host is pointless.");
+        } else {
+            if (Time.timeSinceMillis(player.getInfo().lastSyncTime) < 5000L) {
+                player.sendMessage("[scarlet]You may only /sync every 5 seconds.");
+                return;
+            }
+
+            player.getInfo().lastSyncTime = Time.millis();
+            Call.onWorldDataBegin(player.con);
+            Vars.netServer.sendWorldData(player);
+        }
+
+    }
 }
