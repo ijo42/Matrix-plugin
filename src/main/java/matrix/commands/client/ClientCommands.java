@@ -33,7 +33,7 @@ public class ClientCommands {
     public static void sendWaves(String[] arg, Player player) {
         if (player.isAdmin) {
             if (Integer.parseInt(arg[ 0 ]) > 0 && Integer.parseInt(arg[ 0 ]) < 100) {
-                player.sendMessage("[gray][[[#F7E018]Starting..[gray]]");
+                Call.sendChatMessage("[gray][[[#F7E018]Starting..[gray]]");
                 for (int i = 0; i < Integer.parseInt(arg[ 0 ]); i++) {
                     Vars.logic.runWave();
                 }
