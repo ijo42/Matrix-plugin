@@ -78,10 +78,10 @@ public class ChangeCmd extends MainCmd.Command {
                     Vars.maps.reload();
 
                     message = ConfigTranslate.get("cmd.changeMap.successful").replace("{0}", found.name());
+                    lastMapChange = System.currentTimeMillis() / 1000L;
                 }
             }
         }
-        lastMapChange = System.currentTimeMillis() / 1000L;
         channel.sendMessage(message);
     }
 }

@@ -2,6 +2,7 @@ package matrix.discordbot.commands.map;
 
 import matrix.discordbot.Bot;
 import matrix.discordbot.commands.MainCmd;
+import matrix.utils.ChatGuard;
 import matrix.utils.Config;
 import matrix.utils.ConfigTranslate;
 import mindustry.Vars;
@@ -47,7 +48,7 @@ public class DeleteCmd extends MainCmd.Command {
                 } else {
                     Vars.maps.removeMap(found);
                     Vars.maps.reload();
-                    message = ConfigTranslate.get("cmd.deleteMap.successful").replace("{0}", found.name());
+                    message = ConfigTranslate.get("cmd.deleteMap.successful").replace("{0}", ChatGuard.removeColors.apply(found.name()));
                 }
             }
         }
