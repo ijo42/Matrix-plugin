@@ -14,7 +14,7 @@ pipeline {
                 ]) {
                     sh './gradlew build'
                 }
-                archiveArtifacts 'build/libs/*.jar', fingerprint: true
+                archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true, onlyIfSuccessful: true
             }
         }
     }
