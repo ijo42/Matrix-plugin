@@ -1,7 +1,6 @@
 package matrix.discordbot;
 
 import arc.util.Log;
-import javafx.util.Pair;
 import matrix.Matrix;
 import matrix.discordbot.commands.MainCmd;
 import matrix.discordbot.communication.SendToGame;
@@ -111,7 +110,7 @@ public class Bot {
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    public void report(Pair<String, String> suspect, String reporter, String reason) {
+    public void report(String suspectName, String suspectID, String reporter, String reason) {
         Role stuff = Bot.getRoleFromID(Config.get("stuffRoleID")).get();
         TextChannel stuffChat = Bot.getTextChannelFromID(Config.get("stuffChannelID")).get();
         new MessageBuilder().setContent(stuff.getMentionTag()).send(stuffChat);
@@ -119,7 +118,7 @@ public class Bot {
             new MessageBuilder()
                     .setEmbed(new EmbedBuilder()
                             .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
-                            .addField(ConfigTranslate.get("cmd.grief.suspectName"), ChatGuard.removeColors.apply(suspect.getKey()) + " ||#" + suspect.getValue() + "||")
+                            .addField(ConfigTranslate.get("cmd.grief.suspectName"), ChatGuard.removeColors.apply(suspectName) + " ||#" + suspectID + "||")
                             .addField(ConfigTranslate.get("cmd.grief.suspectReason"), reason)
                             .setColor(Color.ORANGE)
                             .setFooter(ConfigTranslate.get("cmd.grief.reporter") + ChatGuard.removeColors.apply(reporter)))
@@ -128,7 +127,7 @@ public class Bot {
             new MessageBuilder()
                     .setEmbed(new EmbedBuilder()
                             .setTitle(ConfigTranslate.get("cmd.grief.titleMsg"))
-                            .addField(Config.get("cmd.grief.suspectName"), ChatGuard.removeColors.apply(suspect.getKey()) + " ||#" + suspect.getValue() + "||")
+                            .addField(Config.get("cmd.grief.suspectName"), ChatGuard.removeColors.apply(suspectName) + " ||#" + suspectID + "||")
                             .setColor(Color.ORANGE)
                             .setFooter(ConfigTranslate.get("cmd.grief.reporter") + ChatGuard.removeColors.apply(reporter)))
                     .send(stuffChat);

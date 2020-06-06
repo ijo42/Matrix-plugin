@@ -3,7 +3,6 @@ package matrix.commands.client;
 import arc.Events;
 import arc.util.Log;
 import arc.util.Strings;
-import javafx.util.Pair;
 import matrix.Matrix;
 import matrix.discordbot.Bot;
 import matrix.utils.*;
@@ -33,7 +32,7 @@ public class ClientCommands {
     public static void sendWaves(String[] arg, Player player) {
         if (player.isAdmin) {
             if (Integer.parseInt(arg[ 0 ]) > 0 && Integer.parseInt(arg[ 0 ]) < 100) {
-                Call.sendChatMessage("[gray][[[#F7E018]Starting..[gray]]");
+                Call.sendMessage("[gray][[[#F7E018]Starting..[gray]]");
                 for (int i = 0; i < Integer.parseInt(arg[ 0 ]); i++) {
                     Vars.logic.runWave();
                 }
@@ -126,7 +125,7 @@ public class ClientCommands {
                     break;
                 }
             if (found != null) {
-                Matrix.INSTANCE.getBot().report(new Pair<>(found.name, String.valueOf(found.id)), player.name, (args.length == 2 ? args[ 1 ] : ""));
+                Matrix.INSTANCE.getBot().report(found.name, String.valueOf(found.id), player.name, (args.length == 2 ? args[ 1 ] : ""));
                 player.sendMessage(ChatGuard.removeColors.apply(found.name) + ConfigTranslate.get("cmd.grief.successfulSend"));
                 cooldowns.put(System.currentTimeMillis() / 1000L, player.uuid);
             } else player.sendMessage(ConfigTranslate.get("cmd.grief.404").replace("{0}", args[ 0 ]));
